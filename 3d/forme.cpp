@@ -3,6 +3,15 @@
 
 using namespace std;
 
+double Forme::interpolation(double a, double b)
+{
+    double aa = abs(a);
+    double ab = abs(b);
+    if(aa+ab!=0)
+        return ab/(aa+ab);
+    return 0.5;
+}
+
 Forme::Forme(int t, int p0, int p1, int p2, int p3)
 {
 	type = t;
@@ -99,12 +108,22 @@ vector<Zone> Forme::dessin(Point p[8], double val[8])
 							c = c.add(i);
 					}
 					Point P0 = p[c.val()];
+					double v0 = val[c.val()];
 					Point P1 = p[c.inv(0).val()];
+					double v1 = val[c.inv(0).val()];
 					Point P2 = p[c.inv(1).val()];
+					double v2 = val[c.inv(1).val()];
 					Point P3 = p[c.inv(2).val()];
-					Point P01 = (P0.add(P1)).mult(0.5);
-					Point P02 = (P0.add(P2)).mult(0.5);;
-					Point P03 = (P0.add(P3)).mult(0.5);;
+					double v3 = val[c.inv(2).val()];
+					double inter01 = interpolation(v0,v1);
+					double inter02 = interpolation(v0,v2);
+					double inter03 = interpolation(v0,v3);
+					inter01 = 0.5;
+					inter02 = 0.5;
+					inter03 = 0.5;
+					Point P01 = P0.mult(inter01).add(P1.mult(1-inter01));
+					Point P02 = P0.mult(inter02).add(P2.mult(1-inter02));
+					Point P03 = P0.mult(inter03).add(P3.mult(1-inter03));
 					Triangle t = {P01,P02,P03};
 					Zone z;
 					z.faces.push_back(t);
@@ -124,6 +143,8 @@ vector<Zone> Forme::dessin(Point p[8], double val[8])
 							b = true;
 						}
 					}
+					double v0, v1, v01, v02, v11, v12;
+					v0 = val[c.val()];
 					Point P0 = p[c.val()];
 					Config c01 = c.inv(0);
 					Config c02 = c.inv(1);
@@ -141,6 +162,9 @@ vector<Zone> Forme::dessin(Point p[8], double val[8])
 						P01 = p[i2];
 						P02 = p[i3];
 						c1 = c01;
+						v1 = val[i1];
+						v01 = val[i2];
+						v02 = val[i3];
 					}
 					else
 					{
@@ -150,6 +174,9 @@ vector<Zone> Forme::dessin(Point p[8], double val[8])
 							P01 = p[i1];
 							P02 = p[i3];
 							c1 = c02;
+							v1 = val[i2];
+							v01 = val[i1];
+							v02 = val[i3];
 						}
 						else
 						{
@@ -157,6 +184,9 @@ vector<Zone> Forme::dessin(Point p[8], double val[8])
 							P01 = p[i1];
 							P02 = p[i2];
 							c1 = c03;
+							v1 = val[i3];
+							v01 = val[i1];
+							v02 = val[i2];
 						}
 					}
 					c01 = c1.inv(0);
@@ -171,6 +201,8 @@ vector<Zone> Forme::dessin(Point p[8], double val[8])
 					{
 						P11 = p[i2];
 						P12 = p[i3];
+						v11 = val[i2];
+						v12 = val[i3];
 					}
 					else
 					{
@@ -178,13 +210,22 @@ vector<Zone> Forme::dessin(Point p[8], double val[8])
 						{
 							P11 = p[i1];
 							P12 = p[i3];
+							v11 = val[i1];
+							v12 = val[i3];
 						}
 						else
 						{
 							P11 = p[i1];
 							P12 = p[i2];
+							v11 = val[i1];
+							v12 = val[i2];
 						}
 					}
+					//P01 = P0.mult(inter01).add(P1.mult(1-inter01));
+					double inter01 = interpolation(v0,v01);
+					double inter02 = interpolation(v0,v02);
+					double inter11 = interpolation(v1,v11);
+					double inter12 = interpolation(v1,v12);
 					P01 = (P01.add(P0)).mult(0.5);
 					P02 = (P02.add(P0)).mult(0.5);
 					P11 = (P11.add(P1)).mult(0.5);
@@ -476,7 +517,6 @@ vector<Zone> Forme::dessin(Point p[8], double val[8])
 					map<int,int> corr;
 					map<int,int> corr2;
 					vector<int> ps;
-					
 					for(int i=0; i<4; i++)
 					{
 						Config c = cs[i];
@@ -502,6 +542,7 @@ vector<Zone> Forme::dessin(Point p[8], double val[8])
 					Point A0, A1, B01, B02, B11, B12;
 					Point PA0, PA1, PB0, PB1;
 					int a1,a2,b01,b02,b11,b12;
+					int oa0, oa1, ob0, ob1;
 					for(int i=0; i<4; i++)
 					{
 						if(corr2.find(i)!=corr2.end())
@@ -515,6 +556,7 @@ vector<Zone> Forme::dessin(Point p[8], double val[8])
 								B12 = p[x1];
 								b12 = x1;
 								PB1 = p[cs[i].val()];
+								ob1 = cs[i].val();
 							}
 							else
 							{
@@ -524,6 +566,7 @@ vector<Zone> Forme::dessin(Point p[8], double val[8])
 								B02 = p[x1];
 								b02 = x1;
 								PB0 = p[cs[i].val()];
+								ob0 = cs[i].val();
 							}
 							
 						}
@@ -535,6 +578,7 @@ vector<Zone> Forme::dessin(Point p[8], double val[8])
 								A1 = p[x0];
 								a2 = x0;
 								PA1 = p[cs[i].val()];
+								oa1 = cs[i].val();
 							}
 							else
 							{
@@ -542,6 +586,7 @@ vector<Zone> Forme::dessin(Point p[8], double val[8])
 								A0 = p[x0];
 								a1 = x0;
 								PA0 = p[cs[i].val()];
+								oa0 = cs[i].val();
 							}
 							
 						}
@@ -558,19 +603,19 @@ vector<Zone> Forme::dessin(Point p[8], double val[8])
 					Point P2;
 					if(a1==b01)
 					{
-						P1 = B01;
+						P1 = B02;
 					}
 					if(a1==b02)
 					{
-						P1 = B02;
+						P1 = B01;
 					}
 					if(a1==b11)
 					{
-						P1 = B11;
+						P1 = B12;
 					}
 					if(a1==b12)
 					{
-						P1 = B12;
+						P1 = B11;
 					}
 					if(a2==b01)
 					{

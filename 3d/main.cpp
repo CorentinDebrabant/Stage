@@ -15,8 +15,6 @@
 
 using namespace std;
 
-
-
 struct IndiceCube{
     bool x;
     bool y;
@@ -92,11 +90,16 @@ double dist(Point P);
 double dist2(Point P1, Point P2);
 Point hsv2rgb(double h, double s, double v);
 void initMap();
+void setSize();
 
 map<string,Forme> guide;
 map<string,bool> marque;
 vector<Point> pile;
 map<string,EdgeCube> CubePlane;
+vector<double> targets;
+
+vector<vector<vector<double>>> champ;
+int resoC = 10;
 
 Point A = {-1,-1,-1};
 Point B = {-1,-1,1};
@@ -130,7 +133,8 @@ double vg = -1;
 double vh = -1;
 
 int nb = 26;
-
+double taille = 2;
+int fonction = 0;
 
 // variables globales pour OpenGL
 bool mouseLeftDown;
@@ -333,15 +337,6 @@ void initMap()
     guide["01111111"] = Forme(1,0,-1,-1,-1);
 }
 
-double interpolation(double a, double b)
-{
-    double aa = abs(a);
-    double ab = abs(b);
-    if(aa+ab!=0)
-        return ab/(aa+ab);
-    return 0.5;
-}
-
 double dist2(Point P1, Point P2)
 {
     double x = P2.x - P1.x;
@@ -398,37 +393,145 @@ Point hsv2rgb(double h, double s, double v)
 //-----------------------------------------------------
 double val(Point P)
 {
-    if(va<0 || vb<0 || vc<0 || vd<0 || ve<0 || vf<0 || vg<0 || vh<0)
+    double v = 0;
+    switch(fonction)
     {
-        va = (double)(rand()) / (double)(RAND_MAX);
-        vb = (double)(rand()) / (double)(RAND_MAX);
-        vc = (double)(rand()) / (double)(RAND_MAX);
-        vd = (double)(rand()) / (double)(RAND_MAX);
-        ve = (double)(rand()) / (double)(RAND_MAX);
-        vf = (double)(rand()) / (double)(RAND_MAX);
-        vg = (double)(rand()) / (double)(RAND_MAX);
-        vh = (double)(rand()) / (double)(RAND_MAX);
+        case 1:
+            {
+                if(champ.size()==0)
+                {
+                    for(int i=-resoC; i<=resoC; i++)
+                    {
+                        vector<vector<double>> cy;
+                        for(int j=-resoC; j<=resoC; j++)
+                        {
+                            vector<double> cz;
+                            for(int k=-resoC; k<=resoC; k++)
+                            {
+                                if(k==-resoC && j==-resoC && i==-resoC)
+                                {
+                                    double x = ((double)(rand()) / (double)(RAND_MAX));
+                                    cz.push_back(x);
+                                }
+                                else
+                                {
+                                    vector<double> val;
+                                    if(i!=-resoC)
+                                    {
+                                        val.push_back(champ[resoC+i-1][resoC+j][resoC+k]);
+                                        if(j!=-resoC)
+                                        {
+                                            val.push_back(champ[resoC+i-1][resoC+j-1][resoC+k]);
+                                            if(k!=-resoC)
+                                            {
+                                                val.push_back(champ[resoC+i-1][resoC+j-1][resoC+k-1]);
+                                            }
+                                        }
+                                        if(k!=-resoC)
+                                        {
+                                            val.push_back(champ[resoC+i-1][resoC+j][resoC+k-1]);
+                                        }
+                                    }
+                                    
+                                    if(j!=-resoC)
+                                    {
+                                        val.push_back(cy[cy.size()-1][resoC+k]);
+                                        if(k!=-resoC)
+                                        {
+                                            val.push_back(cy[cy.size()-1][resoC+k-1]);
+                                        }
+                                    }
+                                    
+                                    if(k!=-resoC)
+                                    {
+                                        val.push_back(cz[cz.size()-1]);
+                                    }
+                                    
+                                    double avg = 0;
+                                    int nb = 0;
+                                    for(int b=0; b<val.size(); b++)
+                                    {
+                                        nb++;
+                                        avg+=val[b];
+                                    }
+                                    avg/=(double)nb;
+                                    double x = ((double)(rand()) / (double)(RAND_MAX))/5-0.1;
+                                    cz.push_back(avg+x);
+                                }
+                            }
+                            cy.push_back(cz);
+                        }
+                        champ.push_back(cy);
+                    }
+                }
+                double p = (taille/(resoC*2));
+                int x = resoC + (int)floor(P.x/p);
+                int y = resoC + (int)floor(P.y/p);
+                int z = resoC + (int)floor(P.z/p);
+                if(x==resoC*2)
+                    x=resoC*2-1;
+                if(y==resoC*2)
+                    y=resoC*2-1;
+                if(z==resoC*2)
+                    z=resoC*2-1;
+                double v0 = champ[x][y][z];
+                double v1 = champ[x][y][z+1];
+                double v2 = champ[x][y+1][z];
+                double v3 = champ[x][y+1][z+1];
+                double v4 = champ[x+1][y][z];
+                double v5 = champ[x+1][y][z+1];
+                double v6 = champ[x+1][y+1][z];
+                double v7 = champ[x+1][y+1][z+1];
+                Point S = {(x-resoC)*p,(y-resoC)*p,(z-resoC)*p};
+                double xd = (P.x - S.x) / (2*p);
+                double yd = (P.y - S.y) / (2*p);
+                double zd = (P.z - S.z) / (2*p);
+                double v00 = xd*v4 + (1-xd)*v0;
+                double v01 = xd*v5 + (1-xd)*v1;
+                double v11 = xd*v7 + (1-xd)*v3;
+                double v10 = xd*v6 + (1-xd)*v2;
+                double vr0 = yd*v10 + (1-yd)*v00;
+                double vr1 = yd*v11 + (1-yd)*v01;
+                v = zd*vr1 + (1-zd)*vr0;
+            }
+            break;
+        default:
+            {
+                if(va<0 || vb<0 || vc<0 || vd<0 || ve<0 || vf<0 || vg<0 || vh<0)
+                {
+                    va = (double)(rand()) / (double)(RAND_MAX);
+                    vb = (double)(rand()) / (double)(RAND_MAX);
+                    vc = (double)(rand()) / (double)(RAND_MAX);
+                    vd = (double)(rand()) / (double)(RAND_MAX);
+                    ve = (double)(rand()) / (double)(RAND_MAX);
+                    vf = (double)(rand()) / (double)(RAND_MAX);
+                    vg = (double)(rand()) / (double)(RAND_MAX);
+                    vh = (double)(rand()) / (double)(RAND_MAX);
+                    cout<<va<<" "<<vb<<" "<<vc<<" "<<vd<<" "<<ve<<" "<<vf<<" "<<vg<<" "<<vh<<endl;
+                }
+                double xd = (P.x - A.x) / (E.x - A.x);
+                double yd = (P.y - A.y) / (D.y - A.y);
+                double zd = (P.z - A.z) / (B.z - A.z);
+                double v00 = xd*ve + (1-xd)*va;
+                double v01 = xd*vf + (1-xd)*vb;
+                double v11 = xd*vg + (1-xd)*vc;
+                double v10 = xd*vh + (1-xd)*vd;
+                double v0 = yd*v10 + (1-yd)*v00;
+                double v1 = yd*v11 + (1-yd)*v01;
+                v = zd*v1 + (1-zd)*v0;
+            }
+            break;
     }
-    double xd = (P.x - A.x) / (E.x - A.x);
-    double yd = (P.y - A.y) / (D.y - A.y);
-    double zd = (P.z - A.z) / (B.z - A.z);
-    double v00 = xd*ve + (1-xd)*va;
-    double v01 = xd*vf + (1-xd)*vb;
-    double v11 = xd*vg + (1-xd)*vc;
-    double v10 = xd*vh + (1-xd)*vd;
-    double v0 = yd*v10 + (1-yd)*v00;
-    double v1 = yd*v11 + (1-yd)*v01;
-    double v = zd*v1 + (1-zd)*v0;
     return v;
 }
 
 double func(Point P)
 {
-    double v = val(P);
     if(abs(P.x)>1 || abs(P.y)>1 || abs(P.z)>1)
         return -1;
-    return v;
+    return val(P);
 }
+
 
 void dessinZone()
 {
@@ -459,8 +562,19 @@ void dessinZone()
     glColor3f(Co.x,Co.y,Co.z);
     glVertex3f(H.x,H.y,H.z);
     glEnd();
+    float v = 0;
+    glPointSize(10.0f);
+    glBegin(GL_POINTS);
+    while(v<=1.01)
+    {
+        Co = hsv2rgb(v,1,1);
+        glColor3f(Co.x,Co.y,Co.z);
+        glVertex3f(-1.5,0,v);
+        v+=0.1;
+    }
+    glEnd();
     glPointSize(1.0f);
-    double nb = 1;
+    double nb = 3;
     glBegin(GL_POINTS);
     for(int i=-nb; i<=nb; i++)
     {
@@ -499,20 +613,29 @@ double distFromSurface(Point P0, Point P1, double target)
     return s;
 }
 
-void marchingCube(Point origine, double pas, double target)
+void marchingCube(Point origine, double pas, double target/*, vector<vector<Point>> *C*/)
 {
-    marque.clear();
+    //cout<<"Start "<<pas<<" "<<target<<" Départ en ("<<origine.x<<", "<<origine.y<<", "<<origine.z<<") et valeur = "<<func(origine)<<endl;
     pile.push_back({0,0,0});
+    int nbP = 5;
+    int np = (taille/pas)/nbP;
+    bool plop = false;
     int st = 0;
     while(pile.size()!=0)
     {
-        cout<<"Pile "<<pile.size()<<endl;
+        if(pile.size()>10 && !plop)
+        {
+            plop = true;
+            
+        }
+        //cout<<"Pile "<<pile.size()<<endl;
         Point Pi = pile[0];
         string k = to_string(Pi.x)+":"+to_string(Pi.y)+":"+to_string(Pi.z);
         if(marque.find(k) == marque.end())
         {
             marque[k]=true;
             Point P = {origine.x+pas*Pi.x, origine.y+pas*Pi.y, origine.z+pas*Pi.z};
+            //cout<<func(P)<<endl;
             Point P000 = {P.x-pas/2, P.y-pas/2, P.z-pas/2};
             Point P001 = {P.x-pas/2, P.y-pas/2, P.z+pas/2};
             Point P011 = {P.x-pas/2, P.y+pas/2, P.z+pas/2};
@@ -786,9 +909,10 @@ void marchingCube(Point origine, double pas, double target)
             }
             if(!stop)
             {
+                //cout<<"x"<<endl;
                 float c = (double)st/100.0;
                 Point C = hsv2rgb(c,1,1);
-                glColor3f(C.x,C.y,C.z);
+                //glColor3f(C.x,C.y,C.z);
                 /*
                 glBegin(GL_LINES);
                     glVertex3f(P000.x,P000.y,P000.z);
@@ -817,2602 +941,119 @@ void marchingCube(Point origine, double pas, double target)
                     glVertex3f(P110.x,P110.y,P110.z);
                 glEnd();
                 */
-                glPointSize(2.0f);
-                glBegin(GL_POINTS);
+                Config g;
+                g.max = 8;
+                if(v000>0)
+                    g=g.inv(7);
+                if(v001>0)
+                    g=g.inv(6);
+                if(v010>0)
+                    g=g.inv(5);
+                if(v011>0)
+                    g=g.inv(4);
+                if(v100>0)
+                    g=g.inv(3);
+                if(v101>0)
+                    g=g.inv(2);
+                if(v110>0)
+                    g=g.inv(1);
+                if(v111>0)
+                    g=g.inv(0);
+                if(guide.find(g.toString())==guide.end())
+                    g.inv();
+                Forme f = guide[g.toString()];
+                if(f.type==0)
+                {
+                    //cout<<"move"<<endl;
+                    /*glColor3f(0,1,0);
+                    glPointSize(3.0f);
+                    glBegin(GL_POINTS);
                     glVertex3f(P.x,P.y,P.z);
-                glEnd();
-                CubePlane.clear();
-                int n000 = 0;
-                int n001 = 0;
-                int n010 = 0;
-                int n011 = 0;
-                int n100 = 0;
-                int n101 = 0;
-                int n110 = 0;
-                int n111 = 0;
-                int nx = 0;
-                int ny = 0;
-                int nz = 0;
-
-                
-                {
-                    if((v000<=0 && v001>0) || (v000>0 && v001<=0))
+                    glEnd();*/
+                    double v0 = abs(v000);
+                    double v1 = abs(v001);
+                    double v2 = abs(v010);
+                    double v3 = abs(v011);
+                    double v4 = abs(v100);
+                    double v5 = abs(v101);
+                    double v6 = abs(v110);
+                    double v7 = abs(v111);
+                    double m = min(min(min(v0,v1),min(v2,v3)),min(min(v4,v5),min(v6,v7)));
+                    int ra = rand()%15;
+                    ra = 7;
+                    if(v0==m || v1==m || v2==m || v3==m || ra==0 || ra>=13)
                     {
-                        Point inter = {0,0,0};
-                        double vint = interpolation(v000,v001);
-                        inter.x = P000.x*vint + (1-vint)*P001.x;
-                        inter.y = P000.y*vint + (1-vint)*P001.y;
-                        inter.z = P000.z*vint + (1-vint)*P001.z;
-                        EdgeCube ec = {c000,c001,cZ,inter};
-                        n000++;
-                        n001++;
-                        nz++;
-                        CubePlane[ec.toString()]=ec;
-                    }
-                    if((v000<=0 && v010>0) || (v000>0 && v010<=0))
-                    {
-                        Point inter = {0,0,0};
-                        double vint = interpolation(v000,v010);
-                        inter.x = P000.x*vint + (1-vint)*P010.x;
-                        inter.y = P000.y*vint + (1-vint)*P010.y;
-                        inter.z = P000.z*vint + (1-vint)*P010.z;
-                        EdgeCube ec = {c000,c010,cY,inter};
-                        n000++;
-                        n010++;
-                        ny++;
-                        CubePlane[ec.toString()]=ec;
-                    }
-                    if((v000<=0 && v100>0) || (v000>0 && v100<=0))
-                    {
-                        Point inter = {0,0,0};
-                        double vint = interpolation(v000,v100);
-                        inter.x = P000.x*vint + (1-vint)*P100.x;
-                        inter.y = P000.y*vint + (1-vint)*P100.y;
-                        inter.z = P000.z*vint + (1-vint)*P100.z;
-                        EdgeCube ec = {c000,c100,cX,inter};
-                        n000++;
-                        n100++;
-                        nx++;
-                        CubePlane[ec.toString()]=ec;
-                    }
-
-                    if((v111<=0 && v110>0) || (v111>0 && v110<=0))
-                    {
-                        Point inter = {0,0,0};
-                        double vint = interpolation(v111,v110);
-                        inter.x = P111.x*vint + (1-vint)*P110.x;
-                        inter.y = P111.y*vint + (1-vint)*P110.y;
-                        inter.z = P111.z*vint + (1-vint)*P110.z;
-                        EdgeCube ec = {c110,c111,cZ,inter};
-                        n111++;
-                        n110++;
-                        nz++;
-                        CubePlane[ec.toString()]=ec;
-                    }
-                    if((v111<=0 && v101>0) || (v111>0 && v101<=0))
-                    {
-                        Point inter = {0,0,0};
-                        double vint = interpolation(v111,v101);
-                        inter.x = P111.x*vint + (1-vint)*P101.x;
-                        inter.y = P111.y*vint + (1-vint)*P101.y;
-                        inter.z = P111.z*vint + (1-vint)*P101.z;
-                        EdgeCube ec = {c101,c111,cY,inter};
-                        n111++;
-                        n101++;
-                        ny++;
-                        CubePlane[ec.toString()]=ec;
-                    }
-                    if((v111<=0 && v011>0) || (v111>0 && v011<=0))
-                    {
-                        Point inter = {0,0,0};
-                        double vint = interpolation(v111,v011);
-                        inter.x = P111.x*vint + (1-vint)*P011.x;
-                        inter.y = P111.y*vint + (1-vint)*P011.y;
-                        inter.z = P111.z*vint + (1-vint)*P011.z;
-                        EdgeCube ec = {c011,c111,cX,inter};
-                        n111++;
-                        n011++;
-                        nx++;
-                        CubePlane[ec.toString()]=ec;
-                    }
-
-                    if((v011<=0 && v001>0) || (v011>0 && v001<=0))
-                    {
-                        Point inter = {0,0,0};
-                        double vint = interpolation(v011,v001);
-                        inter.x = P011.x*vint + (1-vint)*P001.x;
-                        inter.y = P011.y*vint + (1-vint)*P001.y;
-                        inter.z = P011.z*vint + (1-vint)*P001.z;
-                        EdgeCube ec = {c001,c011,cY,inter};
-                        n011++;
-                        n001++;
-                        ny++;
-                        CubePlane[ec.toString()]=ec;
-                    }
-                    if((v101<=0 && v001>0) || (v101>0 && v001<=0))
-                    {
-                        Point inter = {0,0,0};
-                        double vint = interpolation(v101,v001);
-                        inter.x = P101.x*vint + (1-vint)*P001.x;
-                        inter.y = P101.y*vint + (1-vint)*P001.y;
-                        inter.z = P101.z*vint + (1-vint)*P001.z;
-                        EdgeCube ec = {c001,c101,cX,inter};
-                        n101++;
-                        n001++;
-                        nx++;
-                        CubePlane[ec.toString()]=ec;
-                    }
-
-                    if((v010<=0 && v011>0) || (v010>0 && v011<=0))
-                    {
-                        Point inter = {0,0,0};
-                        double vint = interpolation(v010,v011);
-                        inter.x = P010.x*vint + (1-vint)*P011.x;
-                        inter.y = P010.y*vint + (1-vint)*P011.y;
-                        inter.z = P010.z*vint + (1-vint)*P011.z;
-                        EdgeCube ec = {c010,c011,cZ,inter};
-                        n010++;
-                        n011++;
-                        nz++;
-                        CubePlane[ec.toString()]=ec;
-                    }
-                    if((v010<=0 && v110>0) || (v010>0 && v110<=0))
-                    {
-                        Point inter = {0,0,0};
-                        double vint = interpolation(v010,v110);
-                        inter.x = P010.x*vint + (1-vint)*P110.x;
-                        inter.y = P010.y*vint + (1-vint)*P110.y;
-                        inter.z = P010.z*vint + (1-vint)*P110.z;
-                        EdgeCube ec = {c010,c110,cX,inter};
-                        n010++;
-                        n110++;
-                        nx++;
-                        CubePlane[ec.toString()]=ec;
-                    }
-
-                    if((v101<=0 && v100>0) || (v101>0 && v100<=0))
-                    {
-                        Point inter = {0,0,0};
-                        double vint = interpolation(v101,v100);
-                        inter.x = P101.x*vint + (1-vint)*P100.x;
-                        inter.y = P101.y*vint + (1-vint)*P100.y;
-                        inter.z = P101.z*vint + (1-vint)*P100.z;
-                        EdgeCube ec = {c100,c101,cZ,inter};
-                        n101++;
-                        n100++;
-                        nz++;
-                        CubePlane[ec.toString()]=ec;
-                    }
-                    if((v110<=0 && v100>0) || (v110>0 && v100<=0))
-                    {
-                        Point inter = {0,0,0};
-                        double vint = interpolation(v110,v100);
-                        inter.x = P110.x*vint + (1-vint)*P100.x;
-                        inter.y = P110.y*vint + (1-vint)*P100.y;
-                        inter.z = P110.z*vint + (1-vint)*P100.z;
-                        EdgeCube ec = {c100,c110,cY,inter};
-                        n100++;
-                        n110++;
-                        ny++;
-                        CubePlane[ec.toString()]=ec;
-                    }
-                }
-
-                int s = n000 + n001 + n010 + n011 + n100 + n101 + n110 + n111 + nz + ny + nx;
-                if(s==0)
-                {
-                    double v0 = abs(v000+v001+v010+v011)/4.0;
-                    double v1 = abs(v100+v101+v110+v111)/4.0;
-                    double v2 = abs(v000+v010+v100+v110)/4.0;
-                    double v3 = abs(v001+v011+v101+v111)/4.0;
-                    double v4 = abs(v000+v001+v100+v101)/4.0;
-                    double v5 = abs(v010+v011+v110+v111)/4.0;
-                    double m = min(min(min(v0,v1),min(v2,v3)),min(v4,v5));
-                    int ra = rand()%25;
-                    if((v0==m && ra>=6) || ra==0 || ra==24)
-                    {
-                        cout<<"Dir v0 "<<m<<" "<<v0<<endl;
                         pile.push_back({Pi.x-1,Pi.y,Pi.z});
                     }
-                    if((v1==m && ra>=6) || ra==1 || ra==24)
+                    if(v4==m || v5==m || v6==m || v7==m || ra==1 || ra>=13)
                     {
-                        cout<<"Dir v1 "<<m<<" "<<v1<<endl;
                         pile.push_back({Pi.x+1,Pi.y,Pi.z});
                     }
-                    if((v2==m && ra>=6) || ra==2 || ra==24)
+                    if(v0==m || v2==m || v4==m || v6==m || ra==2 || ra>=13)
                     {
-                        cout<<"Dir v2 "<<m<<" "<<v2<<endl;
                         pile.push_back({Pi.x,Pi.y,Pi.z-1});
                     }
-                    if((v3==m && ra>=6) || ra==3 || ra==24)
+                    if(v1==m || v3==m || v5==m || v7==m || ra==3 || ra>=13)
                     {
-                        cout<<"Dir v3 "<<m<<" "<<v3<<endl;
                         pile.push_back({Pi.x,Pi.y,Pi.z+1});
                     }
-                    if((v4==m && ra>=6) || ra==4 || ra==24)
+                    if(v0==m || v1==m || v4==m || v6==m || ra==4 || ra>=13)
                     {
-                        cout<<"Dir v4 "<<m<<" "<<v4<<endl;
                         pile.push_back({Pi.x,Pi.y-1,Pi.z});
                     }
-                    if((v5==m && ra>=6) || ra==5 || ra==24)
+                    if(v2==m || v3==m || v5==m || v7==m || ra==5 || ra>=13)
                     {
-                        cout<<"Dir v5 "<<m<<" "<<v5<<endl;
                         pile.push_back({Pi.x,Pi.y+1,Pi.z});
                     }
                 }
                 else
                 {
-                    cout<<n000<<"\t"<<n001<<"\t"<<n010<<"\t"<<n011<<"\t"<<endl;
-                    cout<<n100<<"\t"<<n101<<"\t"<<n110<<"\t"<<n111<<"\t"<<endl;
-
-                    if(n000==3)
+                    //cout<<"dessin"<<endl;
+                    /*if((int)(Pi.x+Pi.y+Pi.z)%np==0)
                     {
-                        n000=0;
-                        IndiceCube i = c000;
-                        IndiceCube i0 = i.add(cX);
-                        IndiceCube i1 = i.add(cY);
-                        IndiceCube i2 = i.add(cZ);
-                        int ip0 = i0.toInt();
-                        int ip1 = i1.toInt();
-                        int ip2 = i2.toInt();
-                        cout<<i.toString()<<"\t"<<i0.toString()<<"\t"<<i1.toString()<<"\t"<<i2.toString()<<endl;
-                        switch(ip0)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        switch(ip1)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        switch(ip2)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        Point P0 = {0,0,0};
-                        Point P1 = {0,0,0};
-                        Point P2 = {0,0,0};
-                        if(i.toInt()<i0.toInt())
-                        {
-                            P0 = CubePlane[i.toString()+":"+i0.toString()+":x"].inter;
-                        }
-                        else
-                        {
-                            P0 = CubePlane[i0.toString()+":"+i.toString()+":x"].inter;
-                        }
-                        if(i.toInt()<i1.toInt())
-                        {
-                            P1 = CubePlane[i.toString()+":"+i1.toString()+":y"].inter;
-                        }
-                        else
-                        {
-                            P1 = CubePlane[i1.toString()+":"+i.toString()+":y"].inter;
-                        }
-                        if(i.toInt()<i2.toInt())
-                        {
-                            P2 = CubePlane[i.toString()+":"+i2.toString()+":z"].inter;
-                        }
-                        else
-                        {
-                            P2 = CubePlane[i2.toString()+":"+i.toString()+":z"].inter;
-                        }
-                        glBegin(GL_TRIANGLES);
-                        glVertex3f(P0.x,P0.y,P0.z);
-                        glVertex3f(P1.x,P1.y,P1.z);
-                        glVertex3f(P2.x,P2.y,P2.z);
+                        glPointSize(10.0f);
+                        glColor3f(1,1,1);
+                        glBegin(GL_POINTS);
+                        glVertex3f(P.x,P.y,P.z);
                         glEnd();
-                    }
-
-                    if(n001==3)
+                    }*/
+                    /*glColor3f(1,0,0);
+                    glPointSize(3.0f);
+                    glBegin(GL_POINTS);
+                    glVertex3f(P.x,P.y,P.z);
+                    glEnd();*/
+                    Point P[8] = {P000,P001,P010,P011,P100,P101,P110,P111};
+                    double v[8]= {v000,v001,v010,v011,v100,v101,v110,v111};
+                    vector<Zone> vz = f.dessin(P,v);
+                    for(int i=0; i<vz.size(); i++)
                     {
-                        n001=0;
-                        IndiceCube i = c001;
-                        IndiceCube i0 = i.add(cX);
-                        IndiceCube i1 = i.add(cY);
-                        IndiceCube i2 = i.add(cZ);
-                        int ip0 = i0.toInt();
-                        int ip1 = i1.toInt();
-                        int ip2 = i2.toInt();
-                        cout<<i.toString()<<"\t"<<i0.toString()<<"\t"<<i1.toString()<<"\t"<<i2.toString()<<endl;
-                        switch(ip0)
+                        Zone z = vz[i];
+                        Point Co = hsv2rgb(target,1,1);
+                        glColor3f(Co.x,Co.y,Co.z);
+                        for(int j=0; j<z.faces.size(); j++)
                         {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
+                            Triangle t = z.faces[j];
+                            //glColor3f(1,1,1);
+                            /*glBegin(GL_TRIANGLES);
+                            glVertex3f(t.P0.x,t.P0.y,t.P0.z);
+                            glVertex3f(t.P1.x,t.P1.y,t.P1.z);
+                            glVertex3f(t.P2.x,t.P2.y,t.P2.z);
+                            glEnd();*/
+                            
+                            //glColor3f(0,0,0);
+                            glBegin(GL_LINE_LOOP);
+                            glVertex3f(t.P0.x,t.P0.y,t.P0.z);
+                            glVertex3f(t.P1.x,t.P1.y,t.P1.z);
+                            glVertex3f(t.P2.x,t.P2.y,t.P2.z);
+                            glEnd();
                         }
-                        switch(ip1)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        switch(ip2)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        Point P0 = {0,0,0};
-                        Point P1 = {0,0,0};
-                        Point P2 = {0,0,0};
-                        if(i.toInt()<i0.toInt())
-                        {
-                            P0 = CubePlane[i.toString()+":"+i0.toString()+":x"].inter;
-                        }
-                        else
-                        {
-                            P0 = CubePlane[i0.toString()+":"+i.toString()+":x"].inter;
-                        }
-                        if(i.toInt()<i1.toInt())
-                        {
-                            P1 = CubePlane[i.toString()+":"+i1.toString()+":y"].inter;
-                        }
-                        else
-                        {
-                            P1 = CubePlane[i1.toString()+":"+i.toString()+":y"].inter;
-                        }
-                        if(i.toInt()<i2.toInt())
-                        {
-                            P2 = CubePlane[i.toString()+":"+i2.toString()+":z"].inter;
-                        }
-                        else
-                        {
-                            P2 = CubePlane[i2.toString()+":"+i.toString()+":z"].inter;
-                        }
-                        glBegin(GL_TRIANGLES);
-                        glVertex3f(P0.x,P0.y,P0.z);
-                        glVertex3f(P1.x,P1.y,P1.z);
-                        glVertex3f(P2.x,P2.y,P2.z);
-                        glEnd();
                     }
-
-                    if(n010==3)
-                    {
-                        n010=0;
-                        IndiceCube i = c010;
-                        IndiceCube i0 = i.add(cX);
-                        IndiceCube i1 = i.add(cY);
-                        IndiceCube i2 = i.add(cZ);
-                        int ip0 = i0.toInt();
-                        int ip1 = i1.toInt();
-                        int ip2 = i2.toInt();
-                        cout<<i.toString()<<"\t"<<i0.toString()<<"\t"<<i1.toString()<<"\t"<<i2.toString()<<endl;
-                        switch(ip0)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        switch(ip1)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        switch(ip2)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        Point P0 = {0,0,0};
-                        Point P1 = {0,0,0};
-                        Point P2 = {0,0,0};
-                        if(i.toInt()<i0.toInt())
-                        {
-                            P0 = CubePlane[i.toString()+":"+i0.toString()+":x"].inter;
-                        }
-                        else
-                        {
-                            P0 = CubePlane[i0.toString()+":"+i.toString()+":x"].inter;
-                        }
-                        if(i.toInt()<i1.toInt())
-                        {
-                            P1 = CubePlane[i.toString()+":"+i1.toString()+":y"].inter;
-                        }
-                        else
-                        {
-                            P1 = CubePlane[i1.toString()+":"+i.toString()+":y"].inter;
-                        }
-                        if(i.toInt()<i2.toInt())
-                        {
-                            P2 = CubePlane[i.toString()+":"+i2.toString()+":z"].inter;
-                        }
-                        else
-                        {
-                            P2 = CubePlane[i2.toString()+":"+i.toString()+":z"].inter;
-                        }
-                        glBegin(GL_TRIANGLES);
-                        glVertex3f(P0.x,P0.y,P0.z);
-                        glVertex3f(P1.x,P1.y,P1.z);
-                        glVertex3f(P2.x,P2.y,P2.z);
-                        glEnd();
-                    }
-
-                    if(n100==3)
-                    {
-                        n100=0;
-                        IndiceCube i = c100;
-                        IndiceCube i0 = i.add(cX);
-                        IndiceCube i1 = i.add(cY);
-                        IndiceCube i2 = i.add(cZ);
-                        int ip0 = i0.toInt();
-                        int ip1 = i1.toInt();
-                        int ip2 = i2.toInt();
-                        cout<<i.toString()<<"\t"<<i0.toString()<<"\t"<<i1.toString()<<"\t"<<i2.toString()<<endl;
-                        switch(ip0)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        switch(ip1)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        switch(ip2)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        Point P0 = {0,0,0};
-                        Point P1 = {0,0,0};
-                        Point P2 = {0,0,0};
-                        if(i.toInt()<i0.toInt())
-                        {
-                            P0 = CubePlane[i.toString()+":"+i0.toString()+":x"].inter;
-                        }
-                        else
-                        {
-                            P0 = CubePlane[i0.toString()+":"+i.toString()+":x"].inter;
-                        }
-                        if(i.toInt()<i1.toInt())
-                        {
-                            P1 = CubePlane[i.toString()+":"+i1.toString()+":y"].inter;
-                        }
-                        else
-                        {
-                            P1 = CubePlane[i1.toString()+":"+i.toString()+":y"].inter;
-                        }
-                        if(i.toInt()<i2.toInt())
-                        {
-                            P2 = CubePlane[i.toString()+":"+i2.toString()+":z"].inter;
-                        }
-                        else
-                        {
-                            P2 = CubePlane[i2.toString()+":"+i.toString()+":z"].inter;
-                        }
-                        glBegin(GL_TRIANGLES);
-                        glVertex3f(P0.x,P0.y,P0.z);
-                        glVertex3f(P1.x,P1.y,P1.z);
-                        glVertex3f(P2.x,P2.y,P2.z);
-                        glEnd();
-                    }
-
-                    if(n011==3)
-                    {
-                        n011=0;
-                        IndiceCube i = c011;
-                        IndiceCube i0 = i.add(cX);
-                        IndiceCube i1 = i.add(cY);
-                        IndiceCube i2 = i.add(cZ);
-                        int ip0 = i0.toInt();
-                        int ip1 = i1.toInt();
-                        int ip2 = i2.toInt();
-                        cout<<i.toString()<<"\t"<<i0.toString()<<"\t"<<i1.toString()<<"\t"<<i2.toString()<<endl;
-                        switch(ip0)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        switch(ip1)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        switch(ip2)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        Point P0 = {0,0,0};
-                        Point P1 = {0,0,0};
-                        Point P2 = {0,0,0};
-                        if(i.toInt()<i0.toInt())
-                        {
-                            P0 = CubePlane[i.toString()+":"+i0.toString()+":x"].inter;
-                        }
-                        else
-                        {
-                            P0 = CubePlane[i0.toString()+":"+i.toString()+":x"].inter;
-                        }
-                        if(i.toInt()<i1.toInt())
-                        {
-                            P1 = CubePlane[i.toString()+":"+i1.toString()+":y"].inter;
-                        }
-                        else
-                        {
-                            P1 = CubePlane[i1.toString()+":"+i.toString()+":y"].inter;
-                        }
-                        if(i.toInt()<i2.toInt())
-                        {
-                            P2 = CubePlane[i.toString()+":"+i2.toString()+":z"].inter;
-                        }
-                        else
-                        {
-                            P2 = CubePlane[i2.toString()+":"+i.toString()+":z"].inter;
-                        }
-                        glBegin(GL_TRIANGLES);
-                        glVertex3f(P0.x,P0.y,P0.z);
-                        glVertex3f(P1.x,P1.y,P1.z);
-                        glVertex3f(P2.x,P2.y,P2.z);
-                        glEnd();
-                    }
-
-                    if(n101==3)
-                    {
-                        n101=0;
-                        IndiceCube i = c101;
-                        IndiceCube i0 = i.add(cX);
-                        IndiceCube i1 = i.add(cY);
-                        IndiceCube i2 = i.add(cZ);
-                        int ip0 = i0.toInt();
-                        int ip1 = i1.toInt();
-                        int ip2 = i2.toInt();
-                        cout<<i.toString()<<"\t"<<i0.toString()<<"\t"<<i1.toString()<<"\t"<<i2.toString()<<endl;
-                        switch(ip0)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        switch(ip1)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        switch(ip2)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        Point P0 = {0,0,0};
-                        Point P1 = {0,0,0};
-                        Point P2 = {0,0,0};
-                        if(i.toInt()<i0.toInt())
-                        {
-                            P0 = CubePlane[i.toString()+":"+i0.toString()+":x"].inter;
-                        }
-                        else
-                        {
-                            P0 = CubePlane[i0.toString()+":"+i.toString()+":x"].inter;
-                        }
-                        if(i.toInt()<i1.toInt())
-                        {
-                            P1 = CubePlane[i.toString()+":"+i1.toString()+":y"].inter;
-                        }
-                        else
-                        {
-                            P1 = CubePlane[i1.toString()+":"+i.toString()+":y"].inter;
-                        }
-                        if(i.toInt()<i2.toInt())
-                        {
-                            P2 = CubePlane[i.toString()+":"+i2.toString()+":z"].inter;
-                        }
-                        else
-                        {
-                            P2 = CubePlane[i2.toString()+":"+i.toString()+":z"].inter;
-                        }
-                        glBegin(GL_TRIANGLES);
-                        glVertex3f(P0.x,P0.y,P0.z);
-                        glVertex3f(P1.x,P1.y,P1.z);
-                        glVertex3f(P2.x,P2.y,P2.z);
-                        glEnd();
-                    }
-
-                    if(n110==3)
-                    {
-                        n110=0;
-                        IndiceCube i = c110;
-                        IndiceCube i0 = i.add(cX);
-                        IndiceCube i1 = i.add(cY);
-                        IndiceCube i2 = i.add(cZ);
-                        int ip0 = i0.toInt();
-                        int ip1 = i1.toInt();
-                        int ip2 = i2.toInt();
-                        cout<<i.toString()<<"\t"<<i0.toString()<<"\t"<<i1.toString()<<"\t"<<i2.toString()<<endl;
-                        switch(ip0)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        switch(ip1)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        switch(ip2)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        Point P0 = {0,0,0};
-                        Point P1 = {0,0,0};
-                        Point P2 = {0,0,0};
-                        if(i.toInt()<i0.toInt())
-                        {
-                            P0 = CubePlane[i.toString()+":"+i0.toString()+":x"].inter;
-                        }
-                        else
-                        {
-                            P0 = CubePlane[i0.toString()+":"+i.toString()+":x"].inter;
-                        }
-                        if(i.toInt()<i1.toInt())
-                        {
-                            P1 = CubePlane[i.toString()+":"+i1.toString()+":y"].inter;
-                        }
-                        else
-                        {
-                            P1 = CubePlane[i1.toString()+":"+i.toString()+":y"].inter;
-                        }
-                        if(i.toInt()<i2.toInt())
-                        {
-                            P2 = CubePlane[i.toString()+":"+i2.toString()+":z"].inter;
-                        }
-                        else
-                        {
-                            P2 = CubePlane[i2.toString()+":"+i.toString()+":z"].inter;
-                        }
-                        glBegin(GL_TRIANGLES);
-                        glVertex3f(P0.x,P0.y,P0.z);
-                        glVertex3f(P1.x,P1.y,P1.z);
-                        glVertex3f(P2.x,P2.y,P2.z);
-                        glEnd();
-                    }
-
-                    if(n111==3)
-                    {
-                        n111=0;
-                        IndiceCube i = c111;
-                        IndiceCube i0 = i.add(cX);
-                        IndiceCube i1 = i.add(cY);
-                        IndiceCube i2 = i.add(cZ);
-                        int ip0 = i0.toInt();
-                        int ip1 = i1.toInt();
-                        int ip2 = i2.toInt();
-                        cout<<i.toString()<<"\t"<<i0.toString()<<"\t"<<i1.toString()<<"\t"<<i2.toString()<<endl;
-                        switch(ip0)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        switch(ip1)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        switch(ip2)
-                        {
-                            case 0:
-                                n000--;
-                                break;
-                            case 1:
-                                n001--;
-                                break;
-                            case 2:
-                                n010--;
-                                break;
-                            case 3:
-                                n011--;
-                                break;
-                            case 4:
-                                n100--;
-                                break;
-                            case 5:
-                                n101--;
-                                break;
-                            case 6:
-                                n110--;
-                                break;
-                            case 7:
-                                n111--;
-                        }
-                        Point P0 = {0,0,0};
-                        Point P1 = {0,0,0};
-                        Point P2 = {0,0,0};
-                        if(i.toInt()<i0.toInt())
-                        {
-                            P0 = CubePlane[i.toString()+":"+i0.toString()+":x"].inter;
-                        }
-                        else
-                        {
-                            P0 = CubePlane[i0.toString()+":"+i.toString()+":x"].inter;
-                        }
-                        if(i.toInt()<i1.toInt())
-                        {
-                            P1 = CubePlane[i.toString()+":"+i1.toString()+":y"].inter;
-                        }
-                        else
-                        {
-                            P1 = CubePlane[i1.toString()+":"+i.toString()+":y"].inter;
-                        }
-                        if(i.toInt()<i2.toInt())
-                        {
-                            P2 = CubePlane[i.toString()+":"+i2.toString()+":z"].inter;
-                        }
-                        else
-                        {
-                            P2 = CubePlane[i2.toString()+":"+i.toString()+":z"].inter;
-                        }
-                        glBegin(GL_TRIANGLES);
-                        glVertex3f(P0.x,P0.y,P0.z);
-                        glVertex3f(P1.x,P1.y,P1.z);
-                        glVertex3f(P2.x,P2.y,P2.z);
-                        glEnd();
-                    }
-
-                    if(n000>0)
-                    {
-                        IndiceCube i = c000;
-                        int* targ = &n000;
-                        IndiceCube i0 = i.add(cX);
-                        IndiceCube i1 = i.add(cY);
-                        IndiceCube i2 = i.add(cZ);
-                        EdgeCube e0 = {i,i0,cX,{0,0,0}};
-                        EdgeCube e1 = {i,i1,cY,{0,0,0}};
-                        EdgeCube e2 = {i,i2,cZ,{0,0,0}};
-                        e0.order();
-                        e1.order();
-                        e2.order();
-                        string chx = "";
-                        if(CubePlane.find(e0.toString())!=CubePlane.end())
-                        {
-                            chx = e0.toString();
-                            if(*targ!=2)
-                            {
-                                targ = &nx;
-                            }
-                        }
-                        else
-                        {
-                            if(CubePlane.find(e1.toString())!=CubePlane.end())
-                            {
-                                chx = e1.toString();
-                                if(*targ!=2)
-                                {
-                                    targ = &ny;
-                                }
-                            }
-                            else
-                            {
-                                if(CubePlane.find(e2.toString())!=CubePlane.end())
-                                {
-                                    chx = e2.toString();
-                                    if(*targ!=2)
-                                    {
-                                        targ = &nz;
-                                    }
-                                }
-                            }
-                        }
-                        vector<Point> face;
-                        int st = 0;
-                        while(*targ!=0 && st<3)
-                        {
-                            st++;
-                            cout<<n000<<"\t"<<n001<<"\t"<<n010<<"\t"<<n011<<"\t"<<endl;
-                            cout<<n100<<"\t"<<n101<<"\t"<<n110<<"\t"<<n111<<"\t"<<endl;
-                            EdgeCube ec = CubePlane[chx];
-                            cout<<ec.toString()<<endl;
-                            CubePlane.erase(ec.toString());
-                            face.push_back(ec.inter);
-                            int ip0 = ec.P0.toInt();
-                            int ip1 = ec.P1.toInt();
-                            int ipA = ec.coupe.toInt();
-                            vector<EdgeCube> liste;
-                            switch(ip0)
-                            {
-                                case 0:
-                                    n000--;
-                                    break;
-                                case 1:
-                                    n001--;
-                                    break;
-                                case 2:
-                                    n010--;
-                                    break;
-                                case 3:
-                                    n011--;
-                                    break;
-                                case 4:
-                                    n100--;
-                                    break;
-                                case 5:
-                                    n101--;
-                                    break;
-                                case 6:
-                                    n110--;
-                                    break;
-                                case 7:
-                                    n111--;
-                            }
-                            switch(ip1)
-                            {
-                                case 0:
-                                    n000--;
-                                    break;
-                                case 1:
-                                    n001--;
-                                    break;
-                                case 2:
-                                    n010--;
-                                    break;
-                                case 3:
-                                    n011--;
-                                    break;
-                                case 4:
-                                    n100--;
-                                    break;
-                                case 5:
-                                    n101--;
-                                    break;
-                                case 6:
-                                    n110--;
-                                    break;
-                                case 7:
-                                    n111--;
-                            }
-                            switch(ipA)
-                            {
-                                case 1:
-                                    nz--;
-                                    liste.push_back({ec.P0.add(cY),ec.P1.add(cY),cX,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cZ),ec.P1.add(cZ),cX,{0,0,0}});
-                                    break;
-                                case 2:
-                                    liste.push_back({ec.P0.add(cX),ec.P1.add(cX),cY,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cZ),ec.P1.add(cZ),cY,{0,0,0}});
-                                    ny--;
-                                    break;
-                                case 4:
-                                    liste.push_back({ec.P0.add(cX),ec.P1.add(cX),cZ,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cY),ec.P1.add(cY),cZ,{0,0,0}});
-                                    nx--;
-                                    break;
-                            }
-                            if(ec.P0.toInt()!=i.toInt())
-                                i = ec.P0;
-                            else
-                                i = ec.P1;
-                            i0 = i.add(cX);
-                            i1 = i.add(cY);
-                            i2 = i.add(cZ);
-                            e0 = {i,i0,cX,{0,0,0}};
-                            e1 = {i,i1,cX,{0,0,0}};
-                            e2 = {i,i2,cX,{0,0,0}};
-                            e0.order();
-                            e1.order();
-                            e2.order();
-                            liste.push_back(e0);
-                            liste.push_back(e1);
-                            liste.push_back(e2);
-                            EdgeCube e = ec;
-                            double min = -1;
-                            for(int i=0; i<liste.size(); i++)
-                            {
-                                cout<<e.toString()<<endl;
-                                if(CubePlane.find(liste[i].toString())!=CubePlane.end())
-                                {
-                                    EdgeCube et = CubePlane[liste[i].toString()];
-                                    double dist = distFromSurface(ec.inter,et.inter,target);
-                                    if(min==-1 || dist<min)
-                                    {
-                                        e = et;
-                                        min = dist;
-                                    }
-                                    
-                                }
-                            }
-                            chx = e.toString();
-                        }
-                        glBegin(GL_LINE_LOOP);
-                        for(int i=0; i<face.size(); i++)
-                        {
-                            Point P = face[i];
-                            glVertex3f(P.x,P.y,P.z);
-                        }
-                        glEnd();
-                    }
-
-                    if(n001>0)
-                    {
-                        IndiceCube i = c001;
-                        int* targ = &n001;
-                        IndiceCube i0 = i.add(cX);
-                        IndiceCube i1 = i.add(cY);
-                        IndiceCube i2 = i.add(cZ);
-                        EdgeCube e0 = {i,i0,cX,{0,0,0}};
-                        EdgeCube e1 = {i,i1,cY,{0,0,0}};
-                        EdgeCube e2 = {i,i2,cZ,{0,0,0}};
-                        e0.order();
-                        e1.order();
-                        e2.order();
-                        string chx = "";
-                        if(CubePlane.find(e0.toString())!=CubePlane.end())
-                        {
-                            chx = e0.toString();
-                            if(*targ!=2)
-                            {
-                                targ = &nx;
-                            }
-                        }
-                        else
-                        {
-                            if(CubePlane.find(e1.toString())!=CubePlane.end())
-                            {
-                                chx = e1.toString();
-                                if(*targ!=2)
-                                {
-                                    targ = &ny;
-                                }
-                            }
-                            else
-                            {
-                                if(CubePlane.find(e2.toString())!=CubePlane.end())
-                                {
-                                    chx = e2.toString();
-                                    if(*targ!=2)
-                                    {
-                                        targ = &nz;
-                                    }
-                                }
-                            }
-                        }
-                        vector<Point> face;
-                        int st = 0;
-                        while(*targ!=0 && st<3)
-                        {
-                            st++;
-                            cout<<n000<<"\t"<<n001<<"\t"<<n010<<"\t"<<n011<<"\t"<<endl;
-                            cout<<n100<<"\t"<<n101<<"\t"<<n110<<"\t"<<n111<<"\t"<<endl;
-                            EdgeCube ec = CubePlane[chx];
-                            cout<<ec.toString()<<endl;
-                            CubePlane.erase(ec.toString());
-                            face.push_back(ec.inter);
-                            int ip0 = ec.P0.toInt();
-                            int ip1 = ec.P1.toInt();
-                            int ipA = ec.coupe.toInt();
-                            vector<EdgeCube> liste;
-                            switch(ip0)
-                            {
-                                case 0:
-                                    n000--;
-                                    break;
-                                case 1:
-                                    n001--;
-                                    break;
-                                case 2:
-                                    n010--;
-                                    break;
-                                case 3:
-                                    n011--;
-                                    break;
-                                case 4:
-                                    n100--;
-                                    break;
-                                case 5:
-                                    n101--;
-                                    break;
-                                case 6:
-                                    n110--;
-                                    break;
-                                case 7:
-                                    n111--;
-                            }
-                            switch(ip1)
-                            {
-                                case 0:
-                                    n000--;
-                                    break;
-                                case 1:
-                                    n001--;
-                                    break;
-                                case 2:
-                                    n010--;
-                                    break;
-                                case 3:
-                                    n011--;
-                                    break;
-                                case 4:
-                                    n100--;
-                                    break;
-                                case 5:
-                                    n101--;
-                                    break;
-                                case 6:
-                                    n110--;
-                                    break;
-                                case 7:
-                                    n111--;
-                            }
-                            switch(ipA)
-                            {
-                                case 1:
-                                    nz--;
-                                    liste.push_back({ec.P0.add(cY),ec.P1.add(cY),cX,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cZ),ec.P1.add(cZ),cX,{0,0,0}});
-                                    break;
-                                case 2:
-                                    liste.push_back({ec.P0.add(cX),ec.P1.add(cX),cY,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cZ),ec.P1.add(cZ),cY,{0,0,0}});
-                                    ny--;
-                                    break;
-                                case 4:
-                                    liste.push_back({ec.P0.add(cX),ec.P1.add(cX),cZ,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cY),ec.P1.add(cY),cZ,{0,0,0}});
-                                    nx--;
-                                    break;
-                            }
-                            if(ec.P0.toInt()!=i.toInt())
-                                i = ec.P0;
-                            else
-                                i = ec.P1;
-                            i0 = i.add(cX);
-                            i1 = i.add(cY);
-                            i2 = i.add(cZ);
-                            e0 = {i,i0,cX,{0,0,0}};
-                            e1 = {i,i1,cX,{0,0,0}};
-                            e2 = {i,i2,cX,{0,0,0}};
-                            e0.order();
-                            e1.order();
-                            e2.order();
-                            liste.push_back(e0);
-                            liste.push_back(e1);
-                            liste.push_back(e2);
-                            EdgeCube e = ec;
-                            double min = -1;
-                            for(int i=0; i<liste.size(); i++)
-                            {
-                                if(CubePlane.find(liste[i].toString())!=CubePlane.end())
-                                {
-                                    EdgeCube et = CubePlane[liste[i].toString()];
-                                    double dist = distFromSurface(ec.inter,et.inter,target);
-                                    if(min==-1 || dist<min)
-                                    {
-                                        e = et;
-                                        min = dist;
-                                    }
-                                    
-                                }
-                            }
-                            chx = e.toString();
-                        }
-                        glBegin(GL_LINE_LOOP);
-                        for(int i=0; i<face.size(); i++)
-                        {
-                            Point P = face[i];
-                            glVertex3f(P.x,P.y,P.z);
-                        }
-                        glEnd();
-                    }
-
-                    if(n010>0)
-                    {
-                        IndiceCube i = c010;
-                        int* targ = &n010;
-                        IndiceCube i0 = i.add(cX);
-                        IndiceCube i1 = i.add(cY);
-                        IndiceCube i2 = i.add(cZ);
-                        EdgeCube e0 = {i,i0,cX,{0,0,0}};
-                        EdgeCube e1 = {i,i1,cY,{0,0,0}};
-                        EdgeCube e2 = {i,i2,cZ,{0,0,0}};
-                        e0.order();
-                        e1.order();
-                        e2.order();
-                        string chx = "";
-                        if(CubePlane.find(e0.toString())!=CubePlane.end())
-                        {
-                            chx = e0.toString();
-                            if(*targ!=2)
-                            {
-                                targ = &nx;
-                            }
-                        }
-                        else
-                        {
-                            if(CubePlane.find(e1.toString())!=CubePlane.end())
-                            {
-                                chx = e1.toString();
-                                if(*targ!=2)
-                                {
-                                    targ = &ny;
-                                }
-                            }
-                            else
-                            {
-                                if(CubePlane.find(e2.toString())!=CubePlane.end())
-                                {
-                                    chx = e2.toString();
-                                    if(*targ!=2)
-                                    {
-                                        targ = &nz;
-                                    }
-                                }
-                            }
-                        }
-                        vector<Point> face;
-                        int st = 0;
-                        while(*targ!=0 && st<3)
-                        {
-                            st++;
-                            cout<<n000<<"\t"<<n001<<"\t"<<n010<<"\t"<<n011<<"\t"<<endl;
-                            cout<<n100<<"\t"<<n101<<"\t"<<n110<<"\t"<<n111<<"\t"<<endl;
-                            EdgeCube ec = CubePlane[chx];
-                            cout<<ec.toString()<<endl;
-                            CubePlane.erase(ec.toString());
-                            face.push_back(ec.inter);
-                            int ip0 = ec.P0.toInt();
-                            int ip1 = ec.P1.toInt();
-                            int ipA = ec.coupe.toInt();
-                            vector<EdgeCube> liste;
-                            switch(ip0)
-                            {
-                                case 0:
-                                    n000--;
-                                    break;
-                                case 1:
-                                    n001--;
-                                    break;
-                                case 2:
-                                    n010--;
-                                    break;
-                                case 3:
-                                    n011--;
-                                    break;
-                                case 4:
-                                    n100--;
-                                    break;
-                                case 5:
-                                    n101--;
-                                    break;
-                                case 6:
-                                    n110--;
-                                    break;
-                                case 7:
-                                    n111--;
-                            }
-                            switch(ip1)
-                            {
-                                case 0:
-                                    n000--;
-                                    break;
-                                case 1:
-                                    n001--;
-                                    break;
-                                case 2:
-                                    n010--;
-                                    break;
-                                case 3:
-                                    n011--;
-                                    break;
-                                case 4:
-                                    n100--;
-                                    break;
-                                case 5:
-                                    n101--;
-                                    break;
-                                case 6:
-                                    n110--;
-                                    break;
-                                case 7:
-                                    n111--;
-                            }
-                            switch(ipA)
-                            {
-                                case 1:
-                                    nz--;
-                                    liste.push_back({ec.P0.add(cY),ec.P1.add(cY),cX,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cZ),ec.P1.add(cZ),cX,{0,0,0}});
-                                    break;
-                                case 2:
-                                    liste.push_back({ec.P0.add(cX),ec.P1.add(cX),cY,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cZ),ec.P1.add(cZ),cY,{0,0,0}});
-                                    ny--;
-                                    break;
-                                case 4:
-                                    liste.push_back({ec.P0.add(cX),ec.P1.add(cX),cZ,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cY),ec.P1.add(cY),cZ,{0,0,0}});
-                                    nx--;
-                                    break;
-                            }
-                            if(ec.P0.toInt()!=i.toInt())
-                                i = ec.P0;
-                            else
-                                i = ec.P1;
-                            i0 = i.add(cX);
-                            i1 = i.add(cY);
-                            i2 = i.add(cZ);
-                            e0 = {i,i0,cX,{0,0,0}};
-                            e1 = {i,i1,cX,{0,0,0}};
-                            e2 = {i,i2,cX,{0,0,0}};
-                            e0.order();
-                            e1.order();
-                            e2.order();
-                            liste.push_back(e0);
-                            liste.push_back(e1);
-                            liste.push_back(e2);
-                            EdgeCube e = ec;
-                            double min = -1;
-                            for(int i=0; i<liste.size(); i++)
-                            {
-                                if(CubePlane.find(liste[i].toString())!=CubePlane.end())
-                                {
-                                    EdgeCube et = CubePlane[liste[i].toString()];
-                                    double dist = distFromSurface(ec.inter,et.inter,target);
-                                    if(min==-1 || dist<min)
-                                    {
-                                        e = et;
-                                        min = dist;
-                                    }
-                                    
-                                }
-                            }
-                            chx = e.toString();
-                        }
-                        glBegin(GL_LINE_LOOP);
-                        for(int i=0; i<face.size(); i++)
-                        {
-                            Point P = face[i];
-                            glVertex3f(P.x,P.y,P.z);
-                        }
-                        glEnd();
-                    }
-
-                    if(n100>0)
-                    {
-                        IndiceCube i = c100;
-                        int* targ = &n100;
-                        IndiceCube i0 = i.add(cX);
-                        IndiceCube i1 = i.add(cY);
-                        IndiceCube i2 = i.add(cZ);
-                        EdgeCube e0 = {i,i0,cX,{0,0,0}};
-                        EdgeCube e1 = {i,i1,cY,{0,0,0}};
-                        EdgeCube e2 = {i,i2,cZ,{0,0,0}};
-                        e0.order();
-                        e1.order();
-                        e2.order();
-                        string chx = "";
-                        if(CubePlane.find(e0.toString())!=CubePlane.end())
-                        {
-                            chx = e0.toString();
-                            if(*targ!=2)
-                            {
-                                targ = &nx;
-                            }
-                        }
-                        else
-                        {
-                            if(CubePlane.find(e1.toString())!=CubePlane.end())
-                            {
-                                chx = e1.toString();
-                                if(*targ!=2)
-                                {
-                                    targ = &ny;
-                                }
-                            }
-                            else
-                            {
-                                if(CubePlane.find(e2.toString())!=CubePlane.end())
-                                {
-                                    chx = e2.toString();
-                                    if(*targ!=2)
-                                    {
-                                        targ = &nz;
-                                    }
-                                }
-                            }
-                        }
-                        vector<Point> face;
-                        int st = 0;
-                        while(*targ!=0 && st<3)
-                        {
-                            st++;
-                            cout<<n000<<"\t"<<n001<<"\t"<<n010<<"\t"<<n011<<"\t"<<endl;
-                            cout<<n100<<"\t"<<n101<<"\t"<<n110<<"\t"<<n111<<"\t"<<endl;
-                            EdgeCube ec = CubePlane[chx];
-                            cout<<ec.toString()<<endl;
-                            CubePlane.erase(ec.toString());
-                            face.push_back(ec.inter);
-                            int ip0 = ec.P0.toInt();
-                            int ip1 = ec.P1.toInt();
-                            int ipA = ec.coupe.toInt();
-                            vector<EdgeCube> liste;
-                            switch(ip0)
-                            {
-                                case 0:
-                                    n000--;
-                                    break;
-                                case 1:
-                                    n001--;
-                                    break;
-                                case 2:
-                                    n010--;
-                                    break;
-                                case 3:
-                                    n011--;
-                                    break;
-                                case 4:
-                                    n100--;
-                                    break;
-                                case 5:
-                                    n101--;
-                                    break;
-                                case 6:
-                                    n110--;
-                                    break;
-                                case 7:
-                                    n111--;
-                            }
-                            switch(ip1)
-                            {
-                                case 0:
-                                    n000--;
-                                    break;
-                                case 1:
-                                    n001--;
-                                    break;
-                                case 2:
-                                    n010--;
-                                    break;
-                                case 3:
-                                    n011--;
-                                    break;
-                                case 4:
-                                    n100--;
-                                    break;
-                                case 5:
-                                    n101--;
-                                    break;
-                                case 6:
-                                    n110--;
-                                    break;
-                                case 7:
-                                    n111--;
-                            }
-                            switch(ipA)
-                            {
-                                case 1:
-                                    nz--;
-                                    liste.push_back({ec.P0.add(cY),ec.P1.add(cY),cX,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cZ),ec.P1.add(cZ),cX,{0,0,0}});
-                                    break;
-                                case 2:
-                                    liste.push_back({ec.P0.add(cX),ec.P1.add(cX),cY,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cZ),ec.P1.add(cZ),cY,{0,0,0}});
-                                    ny--;
-                                    break;
-                                case 4:
-                                    liste.push_back({ec.P0.add(cX),ec.P1.add(cX),cZ,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cY),ec.P1.add(cY),cZ,{0,0,0}});
-                                    nx--;
-                                    break;
-                            }
-                            if(ec.P0.toInt()!=i.toInt())
-                                i = ec.P0;
-                            else
-                                i = ec.P1;
-                            i0 = i.add(cX);
-                            i1 = i.add(cY);
-                            i2 = i.add(cZ);
-                            e0 = {i,i0,cX,{0,0,0}};
-                            e1 = {i,i1,cX,{0,0,0}};
-                            e2 = {i,i2,cX,{0,0,0}};
-                            e0.order();
-                            e1.order();
-                            e2.order();
-                            liste.push_back(e0);
-                            liste.push_back(e1);
-                            liste.push_back(e2);
-                            EdgeCube e = ec;
-                            double min = -1;
-                            for(int i=0; i<liste.size(); i++)
-                            {
-                                if(CubePlane.find(liste[i].toString())!=CubePlane.end())
-                                {
-                                    EdgeCube et = CubePlane[liste[i].toString()];
-                                    double dist = distFromSurface(ec.inter,et.inter,target);
-                                    if(min==-1 || dist<min)
-                                    {
-                                        e = et;
-                                        min = dist;
-                                    }
-                                    
-                                }
-                            }
-                            chx = e.toString();
-                        }
-                        glBegin(GL_LINE_LOOP);
-                        for(int i=0; i<face.size(); i++)
-                        {
-                            Point P = face[i];
-                            glVertex3f(P.x,P.y,P.z);
-                        }
-                        glEnd();
-                    }
-
-                    if(n011>0)
-                    {
-                        IndiceCube i = c011;
-                        int* targ = &n011;
-                        IndiceCube i0 = i.add(cX);
-                        IndiceCube i1 = i.add(cY);
-                        IndiceCube i2 = i.add(cZ);
-                        EdgeCube e0 = {i,i0,cX,{0,0,0}};
-                        EdgeCube e1 = {i,i1,cY,{0,0,0}};
-                        EdgeCube e2 = {i,i2,cZ,{0,0,0}};
-                        e0.order();
-                        e1.order();
-                        e2.order();
-                        string chx = "";
-                        if(CubePlane.find(e0.toString())!=CubePlane.end())
-                        {
-                            chx = e0.toString();
-                            if(*targ!=2)
-                            {
-                                targ = &nx;
-                            }
-                        }
-                        else
-                        {
-                            if(CubePlane.find(e1.toString())!=CubePlane.end())
-                            {
-                                chx = e1.toString();
-                                if(*targ!=2)
-                                {
-                                    targ = &ny;
-                                }
-                            }
-                            else
-                            {
-                                if(CubePlane.find(e2.toString())!=CubePlane.end())
-                                {
-                                    chx = e2.toString();
-                                    if(*targ!=2)
-                                    {
-                                        targ = &nz;
-                                    }
-                                }
-                            }
-                        }
-                        vector<Point> face;
-                        int st = 0;
-                        while(*targ!=0 && st<3)
-                        {
-                            st++;
-                            cout<<n000<<"\t"<<n001<<"\t"<<n010<<"\t"<<n011<<"\t"<<endl;
-                            cout<<n100<<"\t"<<n101<<"\t"<<n110<<"\t"<<n111<<"\t"<<endl;
-                            EdgeCube ec = CubePlane[chx];
-                            cout<<ec.toString()<<endl;
-                            CubePlane.erase(ec.toString());
-                            face.push_back(ec.inter);
-                            int ip0 = ec.P0.toInt();
-                            int ip1 = ec.P1.toInt();
-                            int ipA = ec.coupe.toInt();
-                            vector<EdgeCube> liste;
-                            switch(ip0)
-                            {
-                                case 0:
-                                    n000--;
-                                    break;
-                                case 1:
-                                    n001--;
-                                    break;
-                                case 2:
-                                    n010--;
-                                    break;
-                                case 3:
-                                    n011--;
-                                    break;
-                                case 4:
-                                    n100--;
-                                    break;
-                                case 5:
-                                    n101--;
-                                    break;
-                                case 6:
-                                    n110--;
-                                    break;
-                                case 7:
-                                    n111--;
-                            }
-                            switch(ip1)
-                            {
-                                case 0:
-                                    n000--;
-                                    break;
-                                case 1:
-                                    n001--;
-                                    break;
-                                case 2:
-                                    n010--;
-                                    break;
-                                case 3:
-                                    n011--;
-                                    break;
-                                case 4:
-                                    n100--;
-                                    break;
-                                case 5:
-                                    n101--;
-                                    break;
-                                case 6:
-                                    n110--;
-                                    break;
-                                case 7:
-                                    n111--;
-                            }
-                            switch(ipA)
-                            {
-                                case 1:
-                                    nz--;
-                                    liste.push_back({ec.P0.add(cY),ec.P1.add(cY),cX,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cZ),ec.P1.add(cZ),cX,{0,0,0}});
-                                    break;
-                                case 2:
-                                    liste.push_back({ec.P0.add(cX),ec.P1.add(cX),cY,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cZ),ec.P1.add(cZ),cY,{0,0,0}});
-                                    ny--;
-                                    break;
-                                case 4:
-                                    liste.push_back({ec.P0.add(cX),ec.P1.add(cX),cZ,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cY),ec.P1.add(cY),cZ,{0,0,0}});
-                                    nx--;
-                                    break;
-                            }
-                            if(ec.P0.toInt()!=i.toInt())
-                                i = ec.P0;
-                            else
-                                i = ec.P1;
-                            i0 = i.add(cX);
-                            i1 = i.add(cY);
-                            i2 = i.add(cZ);
-                            e0 = {i,i0,cX,{0,0,0}};
-                            e1 = {i,i1,cX,{0,0,0}};
-                            e2 = {i,i2,cX,{0,0,0}};
-                            e0.order();
-                            e1.order();
-                            e2.order();
-                            liste.push_back(e0);
-                            liste.push_back(e1);
-                            liste.push_back(e2);
-                            EdgeCube e = ec;
-                            double min = -1;
-                            for(int i=0; i<liste.size(); i++)
-                            {
-                                if(CubePlane.find(liste[i].toString())!=CubePlane.end())
-                                {
-                                    EdgeCube et = CubePlane[liste[i].toString()];
-                                    double dist = distFromSurface(ec.inter,et.inter,target);
-                                    if(min==-1 || dist<min)
-                                    {
-                                        e = et;
-                                        min = dist;
-                                    }
-                                    
-                                }
-                            }
-                            chx = e.toString();
-                        }
-                        glBegin(GL_LINE_LOOP);
-                        for(int i=0; i<face.size(); i++)
-                        {
-                            Point P = face[i];
-                            glVertex3f(P.x,P.y,P.z);
-                        }
-                        glEnd();
-                    }
-
-                    if(n101>0)
-                    {
-                        IndiceCube i = c101;
-                        int* targ = &n101;
-                        IndiceCube i0 = i.add(cX);
-                        IndiceCube i1 = i.add(cY);
-                        IndiceCube i2 = i.add(cZ);
-                        EdgeCube e0 = {i,i0,cX,{0,0,0}};
-                        EdgeCube e1 = {i,i1,cY,{0,0,0}};
-                        EdgeCube e2 = {i,i2,cZ,{0,0,0}};
-                        e0.order();
-                        e1.order();
-                        e2.order();
-                        string chx = "";
-                        if(CubePlane.find(e0.toString())!=CubePlane.end())
-                        {
-                            chx = e0.toString();
-                            if(*targ!=2)
-                            {
-                                targ = &nx;
-                            }
-                        }
-                        else
-                        {
-                            if(CubePlane.find(e1.toString())!=CubePlane.end())
-                            {
-                                chx = e1.toString();
-                                if(*targ!=2)
-                                {
-                                    targ = &ny;
-                                }
-                            }
-                            else
-                            {
-                                if(CubePlane.find(e2.toString())!=CubePlane.end())
-                                {
-                                    chx = e2.toString();
-                                    if(*targ!=2)
-                                    {
-                                        targ = &nz;
-                                    }
-                                }
-                            }
-                        }
-                        vector<Point> face;
-                        int st = 0;
-                        while(*targ!=0 && st<3)
-                        {
-                            st++;
-                            cout<<n000<<"\t"<<n001<<"\t"<<n010<<"\t"<<n011<<"\t"<<endl;
-                            cout<<n100<<"\t"<<n101<<"\t"<<n110<<"\t"<<n111<<"\t"<<endl;
-                            EdgeCube ec = CubePlane[chx];
-                            cout<<ec.toString()<<endl;
-                            CubePlane.erase(ec.toString());
-                            face.push_back(ec.inter);
-                            int ip0 = ec.P0.toInt();
-                            int ip1 = ec.P1.toInt();
-                            int ipA = ec.coupe.toInt();
-                            vector<EdgeCube> liste;
-                            switch(ip0)
-                            {
-                                case 0:
-                                    n000--;
-                                    break;
-                                case 1:
-                                    n001--;
-                                    break;
-                                case 2:
-                                    n010--;
-                                    break;
-                                case 3:
-                                    n011--;
-                                    break;
-                                case 4:
-                                    n100--;
-                                    break;
-                                case 5:
-                                    n101--;
-                                    break;
-                                case 6:
-                                    n110--;
-                                    break;
-                                case 7:
-                                    n111--;
-                            }
-                            switch(ip1)
-                            {
-                                case 0:
-                                    n000--;
-                                    break;
-                                case 1:
-                                    n001--;
-                                    break;
-                                case 2:
-                                    n010--;
-                                    break;
-                                case 3:
-                                    n011--;
-                                    break;
-                                case 4:
-                                    n100--;
-                                    break;
-                                case 5:
-                                    n101--;
-                                    break;
-                                case 6:
-                                    n110--;
-                                    break;
-                                case 7:
-                                    n111--;
-                            }
-                            switch(ipA)
-                            {
-                                case 1:
-                                    nz--;
-                                    liste.push_back({ec.P0.add(cY),ec.P1.add(cY),cX,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cZ),ec.P1.add(cZ),cX,{0,0,0}});
-                                    break;
-                                case 2:
-                                    liste.push_back({ec.P0.add(cX),ec.P1.add(cX),cY,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cZ),ec.P1.add(cZ),cY,{0,0,0}});
-                                    ny--;
-                                    break;
-                                case 4:
-                                    liste.push_back({ec.P0.add(cX),ec.P1.add(cX),cZ,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cY),ec.P1.add(cY),cZ,{0,0,0}});
-                                    nx--;
-                                    break;
-                            }
-                            if(ec.P0.toInt()!=i.toInt())
-                                i = ec.P0;
-                            else
-                                i = ec.P1;
-                            i0 = i.add(cX);
-                            i1 = i.add(cY);
-                            i2 = i.add(cZ);
-                            e0 = {i,i0,cX,{0,0,0}};
-                            e1 = {i,i1,cX,{0,0,0}};
-                            e2 = {i,i2,cX,{0,0,0}};
-                            e0.order();
-                            e1.order();
-                            e2.order();
-                            liste.push_back(e0);
-                            liste.push_back(e1);
-                            liste.push_back(e2);
-                            EdgeCube e = ec;
-                            double min = -1;
-                            for(int i=0; i<liste.size(); i++)
-                            {
-                                if(CubePlane.find(liste[i].toString())!=CubePlane.end())
-                                {
-                                    EdgeCube et = CubePlane[liste[i].toString()];
-                                    double dist = distFromSurface(ec.inter,et.inter,target);
-                                    if(min==-1 || dist<min)
-                                    {
-                                        e = et;
-                                        min = dist;
-                                    }
-                                    
-                                }
-                            }
-                            chx = e.toString();
-                        }
-                        glBegin(GL_LINE_LOOP);
-                        for(int i=0; i<face.size(); i++)
-                        {
-                            Point P = face[i];
-                            glVertex3f(P.x,P.y,P.z);
-                        }
-                        glEnd();
-                    }
-
-                    if(n110>0)
-                    {
-                        IndiceCube i = c110;
-                        int* targ = &n110;
-                        IndiceCube i0 = i.add(cX);
-                        IndiceCube i1 = i.add(cY);
-                        IndiceCube i2 = i.add(cZ);
-                        EdgeCube e0 = {i,i0,cX,{0,0,0}};
-                        EdgeCube e1 = {i,i1,cY,{0,0,0}};
-                        EdgeCube e2 = {i,i2,cZ,{0,0,0}};
-                        e0.order();
-                        e1.order();
-                        e2.order();
-                        string chx = "";
-                        if(CubePlane.find(e0.toString())!=CubePlane.end())
-                        {
-                            chx = e0.toString();
-                            if(*targ!=2)
-                            {
-                                targ = &nx;
-                            }
-                        }
-                        else
-                        {
-                            if(CubePlane.find(e1.toString())!=CubePlane.end())
-                            {
-                                chx = e1.toString();
-                                if(*targ!=2)
-                                {
-                                    targ = &ny;
-                                }
-                            }
-                            else
-                            {
-                                if(CubePlane.find(e2.toString())!=CubePlane.end())
-                                {
-                                    chx = e2.toString();
-                                    if(*targ!=2)
-                                    {
-                                        targ = &nz;
-                                    }
-                                }
-                            }
-                        }
-                        vector<Point> face;
-                        int st = 0;
-                        while(*targ!=0 && st<3)
-                        {
-                            st++;
-                            cout<<n000<<"\t"<<n001<<"\t"<<n010<<"\t"<<n011<<"\t"<<endl;
-                            cout<<n100<<"\t"<<n101<<"\t"<<n110<<"\t"<<n111<<"\t"<<endl;
-                            EdgeCube ec = CubePlane[chx];
-                            cout<<ec.toString()<<endl;
-                            CubePlane.erase(ec.toString());
-                            face.push_back(ec.inter);
-                            int ip0 = ec.P0.toInt();
-                            int ip1 = ec.P1.toInt();
-                            int ipA = ec.coupe.toInt();
-                            vector<EdgeCube> liste;
-                            switch(ip0)
-                            {
-                                case 0:
-                                    n000--;
-                                    break;
-                                case 1:
-                                    n001--;
-                                    break;
-                                case 2:
-                                    n010--;
-                                    break;
-                                case 3:
-                                    n011--;
-                                    break;
-                                case 4:
-                                    n100--;
-                                    break;
-                                case 5:
-                                    n101--;
-                                    break;
-                                case 6:
-                                    n110--;
-                                    break;
-                                case 7:
-                                    n111--;
-                            }
-                            switch(ip1)
-                            {
-                                case 0:
-                                    n000--;
-                                    break;
-                                case 1:
-                                    n001--;
-                                    break;
-                                case 2:
-                                    n010--;
-                                    break;
-                                case 3:
-                                    n011--;
-                                    break;
-                                case 4:
-                                    n100--;
-                                    break;
-                                case 5:
-                                    n101--;
-                                    break;
-                                case 6:
-                                    n110--;
-                                    break;
-                                case 7:
-                                    n111--;
-                            }
-                            switch(ipA)
-                            {
-                                case 1:
-                                    nz--;
-                                    liste.push_back({ec.P0.add(cY),ec.P1.add(cY),cX,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cZ),ec.P1.add(cZ),cX,{0,0,0}});
-                                    break;
-                                case 2:
-                                    liste.push_back({ec.P0.add(cX),ec.P1.add(cX),cY,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cZ),ec.P1.add(cZ),cY,{0,0,0}});
-                                    ny--;
-                                    break;
-                                case 4:
-                                    liste.push_back({ec.P0.add(cX),ec.P1.add(cX),cZ,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cY),ec.P1.add(cY),cZ,{0,0,0}});
-                                    nx--;
-                                    break;
-                            }
-                            if(ec.P0.toInt()!=i.toInt())
-                                i = ec.P0;
-                            else
-                                i = ec.P1;
-                            i0 = i.add(cX);
-                            i1 = i.add(cY);
-                            i2 = i.add(cZ);
-                            e0 = {i,i0,cX,{0,0,0}};
-                            e1 = {i,i1,cX,{0,0,0}};
-                            e2 = {i,i2,cX,{0,0,0}};
-                            e0.order();
-                            e1.order();
-                            e2.order();
-                            liste.push_back(e0);
-                            liste.push_back(e1);
-                            liste.push_back(e2);
-                            EdgeCube e = ec;
-                            double min = -1;
-                            for(int i=0; i<liste.size(); i++)
-                            {
-                                if(CubePlane.find(liste[i].toString())!=CubePlane.end())
-                                {
-                                    EdgeCube et = CubePlane[liste[i].toString()];
-                                    double dist = distFromSurface(ec.inter,et.inter,target);
-                                    if(min==-1 || dist<min)
-                                    {
-                                        e = et;
-                                        min = dist;
-                                    }
-                                    
-                                }
-                            }
-                            chx = e.toString();
-                        }
-                        glBegin(GL_LINE_LOOP);
-                        for(int i=0; i<face.size(); i++)
-                        {
-                            Point P = face[i];
-                            glVertex3f(P.x,P.y,P.z);
-                        }
-                        glEnd();
-                    }
-
-                    if(n111>0)
-                    {
-                        IndiceCube i = c111;
-                        int* targ = &n111;
-                        IndiceCube i0 = i.add(cX);
-                        IndiceCube i1 = i.add(cY);
-                        IndiceCube i2 = i.add(cZ);
-                        EdgeCube e0 = {i,i0,cX,{0,0,0}};
-                        EdgeCube e1 = {i,i1,cY,{0,0,0}};
-                        EdgeCube e2 = {i,i2,cZ,{0,0,0}};
-                        e0.order();
-                        e1.order();
-                        e2.order();
-                        string chx = "";
-                        if(CubePlane.find(e0.toString())!=CubePlane.end())
-                        {
-                            chx = e0.toString();
-                            if(*targ!=2)
-                            {
-                                targ = &nx;
-                            }
-                        }
-                        else
-                        {
-                            if(CubePlane.find(e1.toString())!=CubePlane.end())
-                            {
-                                chx = e1.toString();
-                                if(*targ!=2)
-                                {
-                                    targ = &ny;
-                                }
-                            }
-                            else
-                            {
-                                if(CubePlane.find(e2.toString())!=CubePlane.end())
-                                {
-                                    chx = e2.toString();
-                                    if(*targ!=2)
-                                    {
-                                        targ = &nz;
-                                    }
-                                }
-                            }
-                        }
-                        vector<Point> face;
-                        int st = 0;
-                        while(*targ!=0 && st<3)
-                        {
-                            st++;
-                            cout<<n000<<"\t"<<n001<<"\t"<<n010<<"\t"<<n011<<"\t"<<endl;
-                            cout<<n100<<"\t"<<n101<<"\t"<<n110<<"\t"<<n111<<"\t"<<endl;
-                            EdgeCube ec = CubePlane[chx];
-                            cout<<ec.toString()<<endl;
-                            CubePlane.erase(ec.toString());
-                            face.push_back(ec.inter);
-                            int ip0 = ec.P0.toInt();
-                            int ip1 = ec.P1.toInt();
-                            int ipA = ec.coupe.toInt();
-                            vector<EdgeCube> liste;
-                            switch(ip0)
-                            {
-                                case 0:
-                                    n000--;
-                                    break;
-                                case 1:
-                                    n001--;
-                                    break;
-                                case 2:
-                                    n010--;
-                                    break;
-                                case 3:
-                                    n011--;
-                                    break;
-                                case 4:
-                                    n100--;
-                                    break;
-                                case 5:
-                                    n101--;
-                                    break;
-                                case 6:
-                                    n110--;
-                                    break;
-                                case 7:
-                                    n111--;
-                            }
-                            switch(ip1)
-                            {
-                                case 0:
-                                    n000--;
-                                    break;
-                                case 1:
-                                    n001--;
-                                    break;
-                                case 2:
-                                    n010--;
-                                    break;
-                                case 3:
-                                    n011--;
-                                    break;
-                                case 4:
-                                    n100--;
-                                    break;
-                                case 5:
-                                    n101--;
-                                    break;
-                                case 6:
-                                    n110--;
-                                    break;
-                                case 7:
-                                    n111--;
-                            }
-                            switch(ipA)
-                            {
-                                case 1:
-                                    nz--;
-                                    liste.push_back({ec.P0.add(cY),ec.P1.add(cY),cX,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cZ),ec.P1.add(cZ),cX,{0,0,0}});
-                                    break;
-                                case 2:
-                                    liste.push_back({ec.P0.add(cX),ec.P1.add(cX),cY,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cZ),ec.P1.add(cZ),cY,{0,0,0}});
-                                    ny--;
-                                    break;
-                                case 4:
-                                    liste.push_back({ec.P0.add(cX),ec.P1.add(cX),cZ,{0,0,0}});
-                                    liste.push_back({ec.P0.add(cY),ec.P1.add(cY),cZ,{0,0,0}});
-                                    nx--;
-                                    break;
-                            }
-                            if(ec.P0.toInt()!=i.toInt())
-                                i = ec.P0;
-                            else
-                                i = ec.P1;
-                            i0 = i.add(cX);
-                            i1 = i.add(cY);
-                            i2 = i.add(cZ);
-                            e0 = {i,i0,cX,{0,0,0}};
-                            e1 = {i,i1,cX,{0,0,0}};
-                            e2 = {i,i2,cX,{0,0,0}};
-                            e0.order();
-                            e1.order();
-                            e2.order();
-                            liste.push_back(e0);
-                            liste.push_back(e1);
-                            liste.push_back(e2);
-                            EdgeCube e = ec;
-                            double min = -1;
-                            for(int i=0; i<liste.size(); i++)
-                            {
-                                if(CubePlane.find(liste[i].toString())!=CubePlane.end())
-                                {
-                                    EdgeCube et = CubePlane[liste[i].toString()];
-                                    double dist = distFromSurface(ec.inter,et.inter,target);
-                                    if(min==-1 || dist<min)
-                                    {
-                                        e = et;
-                                        min = dist;
-                                    }
-                                    
-                                }
-                            }
-                            chx = e.toString();
-                        }
-                        glBegin(GL_LINE_LOOP);
-                        for(int i=0; i<face.size(); i++)
-                        {
-                            Point P = face[i];
-                            glVertex3f(P.x,P.y,P.z);
-                        }
-                        glEnd();
-                    }
-
-                    pile.push_back({Pi.x+1,Pi.y,Pi.z});
                     pile.push_back({Pi.x-1,Pi.y,Pi.z});
-                    pile.push_back({Pi.x,Pi.y+1,Pi.z});
-                    pile.push_back({Pi.x,Pi.y-1,Pi.z});
-                    pile.push_back({Pi.x,Pi.y,Pi.z+1});
+                    pile.push_back({Pi.x+1,Pi.y,Pi.z});
                     pile.push_back({Pi.x,Pi.y,Pi.z-1});
-                    
+                    pile.push_back({Pi.x,Pi.y,Pi.z+1});
+                    pile.push_back({Pi.x,Pi.y-1,Pi.z});
+                    pile.push_back({Pi.x,Pi.y+1,Pi.z});
                 }
             }
             
@@ -3420,12 +1061,78 @@ void marchingCube(Point origine, double pas, double target)
         pile.erase(pile.begin());
         st++;
     }
-    cout<<"end"<<endl;
+    //cout<<"Fin"<<endl;
+}
+
+void lancerMarchingCube(double pas, double target)
+{
+    marque.clear();
+    
+    marchingCube({0,0,0},pas,target);
+    bool stop = false;
+    Point P[8] = {{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0}};
+    bool bp[8] = {false,false,false,false,false,false,false,false};
+    while(!stop)
+    {
+        int n = 0;
+        for(int i=0; i<8; i++)
+        {
+            Point Pc = P[i];
+            Config c;
+            c.max = 3;
+            c.inv();
+            c.inv();
+            c = c.add(i);
+            if(func(Pc)!=-1 && !bp[i])
+            {
+                if(c.p[0])
+                    Pc.x=pas;
+                else
+                    Pc.x-=pas;
+                if(c.p[1])
+                    Pc.y+=pas;
+                else
+                    Pc.y-=pas;
+                if(c.p[2])
+                    Pc.z+=pas;
+                else
+                    Pc.z-=pas;
+            }
+            if(func(Pc)==-1)
+            {
+                n++;
+                if(!bp[i])
+                {
+                    bp[i]=true;
+                    if(c.p[0])
+                        Pc.x-=pas*2;
+                    else
+                        Pc.x+=pas*2;
+                    if(c.p[1])
+                        Pc.y-=pas*2;
+                    else
+                        Pc.y+=pas*2;
+                    if(c.p[2])
+                        Pc.z-=pas*2;
+                    else
+                        Pc.z+=pas*2;
+                }
+            }
+            P[i]=Pc;        
+        }
+        if(n==8)
+            stop=true;
+    }
+    for(int i=0; i<8; i++)
+    {
+        marchingCube(P[i],pas,target);
+    }
 }
 
 //------------------------------------------------------
 void affichage(void)
 {
+    targets.clear();
     glMatrixMode(GL_MODELVIEW);
     /* effacement de l'image avec la couleur de fond */
     glClear(GL_COLOR_BUFFER_BIT);
@@ -3434,10 +1141,25 @@ void affichage(void)
     glRotatef(cameraAngleX,1.,0.,0.)	;
     glRotatef(cameraAngleY,0.,1.,0.);
     //affiche_repere();
-    //dessinZone();
-    //marchingCube({0,0,0},0.1,0.5);
-    
-    Config c;
+    dessinZone();
+    /*targets.push_back(0.1);
+    targets.push_back(0.2);
+    targets.push_back(0.3);
+    targets.push_back(0.4);
+    targets.push_back(0.5);
+    targets.push_back(0.6);
+    targets.push_back(0.7);
+    targets.push_back(0.8);
+    targets.push_back(0.9);*/
+    targets.push_back(0.5);
+    targets.push_back(0.6);
+    for(int i=0; i<targets.size(); i++)
+    {
+        
+        double v = targets[i];
+        lancerMarchingCube(0.1,v);
+    }
+    /*Config c;
     c.max = 8;
     c = c.add(nb);
     Point P[8];
@@ -3462,15 +1184,43 @@ void affichage(void)
     cout<<c.toString()<<endl;
     glPointSize(5.0f);
     glBegin(GL_POINTS);
+    Config co;
+    co.max = 3;
+    co = co.add(0);
     for(int i=0; i<8; i++)
     {
+        Point C = {0,0,0};
+        switch(i)
+        {
+            case 1:
+                C = {0,0,0.5};
+                break;
+            case 2:
+                C = {0,0.5,0};
+                break;
+            case 3:
+                C = {0,0.5,0.5};
+                break;
+            case 4:
+                C = {0.5,0,0};
+                break;
+            case 5:
+                C = {0.5,0,0.5};
+                break;
+            case 6:
+                C = {0.5,0.5,0};
+                break;
+            case 7:
+                C = {0.5,0.5,0.5};
+                break;
+        }
         if(v[i]>0)
         {
-            glColor3f(0,1,0);
+            glColor3f(C.x,C.y,C.z);
         }
         else
         {
-            glColor3f(1,0,0);
+            glColor3f(C.x*2,C.y*2,C.z*2);
         }
         glVertex3f(P[i].x,P[i].y,P[i].z);
     }
@@ -3500,7 +1250,7 @@ void affichage(void)
             glVertex3f(t.P2.x,t.P2.y,t.P2.z);
             glEnd();
         }
-    }
+    }*/
     /*
     do{
         cout<<c.toString()<<endl;

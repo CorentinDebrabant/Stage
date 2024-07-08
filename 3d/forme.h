@@ -39,6 +39,13 @@ struct Point{
     }
 };
 
+struct Repere{
+	Point P;
+	Point T1;
+	Point T2;
+	Point N;
+};
+
 struct Triangle{
 	Point P0;
 	Point P1;
@@ -52,14 +59,15 @@ struct Zone{
 class Forme
 {
 	private :
-		int type;
 		bool points[8];
 		vector<Forme> sousForme;
 	public :
+		int type;
 		Forme(int t, int p0, int p1, int p2, int p3);
 		Forme();
 		vector<Zone> dessin(Point p[8], double val[8]);
 		string toString();
+		static double interpolation(double a, double b);
 };
 
 #endif
