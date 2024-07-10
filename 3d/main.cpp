@@ -153,7 +153,7 @@ int main(int argc,char **argv)
   /* initialisation de glut et creation
      de la fenetre */
   glutInit(&argc,argv);
-  glutInitDisplayMode(GLUT_RGB);
+  glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH );
   glutInitWindowPosition(200,200);
   glutInitWindowSize(600,600);
   glutCreateWindow("ifs");
@@ -174,6 +174,9 @@ int main(int argc,char **argv)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	 gluPerspective(60.0f,(GLfloat)200/(GLfloat)200,0.1f,100.0f);
+     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    //glDepthMask( true );
 	glMatrixMode(GL_MODELVIEW);
 	//glLoadIdentity();	
 //	glScalef(.7,.7,.7);
@@ -1029,18 +1032,17 @@ void marchingCube(Point origine, double pas, double target/*, vector<vector<Poin
                     {
                         Zone z = vz[i];
                         Point Co = hsv2rgb(target,1,1);
-                        glColor3f(Co.x,Co.y,Co.z);
+                        
                         for(int j=0; j<z.faces.size(); j++)
                         {
                             Triangle t = z.faces[j];
-                            //glColor3f(1,1,1);
-                            /*glBegin(GL_TRIANGLES);
+                            glColor3f(Co.x,Co.y,Co.z);
+                            glBegin(GL_TRIANGLES);
                             glVertex3f(t.P0.x,t.P0.y,t.P0.z);
                             glVertex3f(t.P1.x,t.P1.y,t.P1.z);
                             glVertex3f(t.P2.x,t.P2.y,t.P2.z);
-                            glEnd();*/
-                            
-                            //glColor3f(0,0,0);
+                            glEnd();
+                            glColor3f(0,0,0);
                             glBegin(GL_LINE_LOOP);
                             glVertex3f(t.P0.x,t.P0.y,t.P0.z);
                             glVertex3f(t.P1.x,t.P1.y,t.P1.z);
@@ -1135,7 +1137,7 @@ void affichage(void)
     targets.clear();
     glMatrixMode(GL_MODELVIEW);
     /* effacement de l'image avec la couleur de fond */
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPushMatrix();
     glTranslatef(0,0,cameraDistance);
     glRotatef(cameraAngleX,1.,0.,0.)	;
