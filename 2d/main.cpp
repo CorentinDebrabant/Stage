@@ -9,6 +9,7 @@
 #include <cstdlib> 
 #include <chrono>
 #include <fstream>
+#include <algorithm>
 
 using namespace std;
 using namespace chrono;
@@ -21,12 +22,13 @@ void affiche_repere(void);
 void initMap();
 void mouse(int, int, int, int);
 void mouseMotion(int, int);
+
 //void reshape(int,int);
 
-float color=0;
+double normeMin = .1;
+double normeMax = .2;
 
-float decX = 0;
-float decY = 0;
+float color=0;
 
 int nbF = -1;
 int nbE = 0;
@@ -89,6 +91,9 @@ struct RetourDensite{
     float somme;
 };
 
+Point addP(Point P1, Point P2, double mult);
+double getAngle(Point V0, Point V1);
+
 map<string,bool> marque;
 vector<Point> pile;
 
@@ -116,6 +121,9 @@ int ng=0;
 float moy2=0;
 int n2=0;
 
+float pX = 0.0001;
+float pY = 0.0001;
+
 bool dessinne = true;
 
 int nb = 0;
@@ -136,6 +144,7 @@ const float yMin = -1;
 const float yMax = 1;
 
 vector<Point> surface;
+vector<int> pointsImportants;
 
 const float limite = 0.0001;
 const float x_size = xMax-xMin;
@@ -148,7 +157,20 @@ bool mouseMiddleDown;
 float mouseX, mouseY;
 float cameraAngleX;
 float cameraAngleY;
-float cameraDistance=0.;
+float cameraDistance=0;
+float decX = 0;
+float decY = 0;
+int dir = -1;
+
+void idle()
+{
+    cout<<pX<<" "<<pY<<endl;
+    if(abs(pY)>0.0051)
+        dir=-dir;
+    pX+=(0.00001*dir);
+    pY+=(0.00001*dir);
+    glutPostRedisplay();
+}
 
 //------------------------------------------------------
 int main(int argc,char **argv)
@@ -173,12 +195,13 @@ int main(int argc,char **argv)
   glutKeyboardFunc(clavier);
   glutMouseFunc(mouse);
   glutMotionFunc(mouseMotion);
+  //glutIdleFunc(idle);
 
 // initialisation des tranformations
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	 gluPerspective(60.0f,(GLfloat)200/(GLfloat)200,0.1f,100.0f);
+	 gluPerspective(60.0f,(GLfloat)200/(GLfloat)200,0.0001f,100.0f);
 	glMatrixMode(GL_MODELVIEW);
 	//glLoadIdentity();	
 //	glScalef(.7,.7,.7);
@@ -313,8 +336,9 @@ float dist(float x, float y, float z)
     return sqrt(x*x+y*y+z*z);
 }
 
-float val(float x, float y, float z)
+double val(double x, double y, double z)
 {
+    /*
     if(a1==-1)
     {
         a1 = (float)(rand()) / (float)(RAND_MAX);
@@ -353,15 +377,21 @@ float val(float x, float y, float z)
     float v1 = a1*iac + (1-iac)*c1;
     float v2 = b1*ibd + (1-ibd)*d1;
     return (v1+v2)/2;
+    */
+    
+    double v = cos(2*x+3*y+0.5)+cos(5*x+3*y-1);
+    v/=4;
+    v+=0.5;
+    return v;
+    
 }
 
-float func(float x, float y, float z)
+double func(float x, float y, float z)
 {
-    float v = val(x,y,z);
     if(x>=-1 && y>=-1 && x<=1 && y<=1)
-        return v;
+        return val(x,y,z);
     else
-        return 0;
+        return -1;
     //return (sqrt(2)-dist(x,y,z))/sqrt(2);
     /*
     if(abs(y)<1 && abs(x)<=1)
@@ -616,8 +646,9 @@ PointReturn findPoint(Point P, float target, int ind, float pas)
 
 Repere getRepere(Point P)
 {
-    float dt = 0.001;
-    float target = func(P.x,P.y,P.z);
+    double dt = 0.0001;
+    double target = val(P.x,P.y,P.z);
+    /*
     float p1 = target - func(P.x-dt,P.y-dt,P.z);
     float p2 = target - func(P.x+dt,P.y-dt,P.z);
     float p3 = target - func(P.x+dt,P.y+dt,P.z);
@@ -627,8 +658,57 @@ Repere getRepere(Point P)
         target = 0;
         dt*=2;
     }
-    if(target!=0)
+    */
+    double p1 = val(P.x+dt,P.y,P.z);
+    double p2 = val(P.x,P.y+dt,P.z);
+    bool p = true;
+    while(abs(target-p1)<0.000000000001 && abs(target-p2)<0.000000000001)
     {
+        if(p)
+            dt/=2;
+        else
+            dt*=2;
+        p1 = val(P.x+dt,P.y,P.z);
+        p2 = val(P.x,P.y+dt,P.z);
+        if(dt<0.000000000001)
+        {
+            dt=0.0001;
+            p=false;
+        }
+    }
+    //cout<<"p0 "<<target<<" "<<p1<<" "<<p2<<endl;
+    //cout<<"P "<<P.x<<" "<<P.x+dt<<" "<<P.y<<" "<<P.y+dt<<endl;
+    p1 = target-p1;
+    p2 = target-p2;
+    //cout<<"p1 "<<p1<<" "<<p2<<" "<<p3<<" "<<p4<<endl;
+    float o = -M_PI/2;
+    Point N = {0,0,0};
+    Point T = {0,0,0};
+    N.x = p1/dt;
+    N.y = p2/dt;
+    float m = dist(N.x,N.y,N.z);
+    N.x/=m;
+    N.y/=m;
+    N.z/=m;
+    //cout<<N.x<<" "<<N.y<<endl;
+    T.x = N.x * cos(o) - N.y * sin(o);
+    T.y = N.x * sin(o) + N.y * cos(o);
+    T.z = N.z;
+    float m2 = dist(T.x,T.y,T.z);
+    T.x/=m2;
+    T.y/=m2;
+    T.z/=m2;
+    return {P,N,T};
+    /*
+    if(p1==-1 || p2==-1)
+    {
+        target = -1;
+        dt*=2;
+        cout<<"U"<<endl;
+    }
+    if(target!=-1)
+    {
+        /*
         if(p1==0 && p2>0 && p4>0)
         {
             p1 = 0.001;
@@ -660,10 +740,6 @@ Repere getRepere(Point P)
         float y2v = 0;
         Point T = {0,0,0};
         Point mid = {0,0,0};
-        /*if(abs(p1-target)<0.0001 || abs(p2-target)<0.0001 || abs(p3-target)<0.0001 || abs(p4-target)<0.0001)
-        {
-            return {P,{1,1,1},T}; 
-        }*/
         switch(chx)
         {
             case 1:
@@ -758,26 +834,30 @@ Repere getRepere(Point P)
                 break;
         }
         return {P,R,T};
-    }
-    else
+        */  
+    //}
+    /*else
     {
+        cout<<endl;
         float ap = M_PI/50;
         float angle = 0;
         Point P1 = {0,0,0};
         Point P2 = {0,0,0};
         int pi = 0;
         int mult = 1;
-        while(pi==0)
+        while(pi<2)
         {
+            pi = 0;
             Point f = {P.x+cos(angle)*dt*mult,P.y+sin(angle)*dt*mult,P.z};
             float vf = func(f.x,f.y,f.z);
-            bool type = (vf==0);
+            bool type = (vf==-1);
             for(int i=1; i<100; i++)
             {
                 angle = i*ap;
                 f = {P.x+cos(angle)*dt*mult,P.y+sin(angle)*dt*mult,P.z};
                 vf = func(f.x,f.y,f.z);
-                if((vf==0)!=type)
+                //cout<<type<<" "<<vf<<" "<<mult<<endl;
+                if((vf==-1)!=type)
                 {
                     type=!type;
                     if(pi==0)
@@ -794,18 +874,11 @@ Repere getRepere(Point P)
             mult++;
         }
         Point T = {0,0,0};
-        if(P1.x<P2.x)
-        {
-            T.x = P2.x-P1.x;
-            T.y = P2.y-P1.y;
-            T.z = P2.z-P1.z;
-        }
-        else
-        {
-            T.x = P1.x-P2.x;
-            T.y = P1.y-P2.y;
-            T.z = P1.z-P2.z;
-        }
+        T.x = abs(P2.x-P1.x);
+        T.y = abs(P2.y-P1.y);
+        T.z = abs(P2.z-P1.z);
+        cout<<"P1 "<<P1.x<<" "<<P1.y<<" "<<P1.z<<" "<<func(P1.x,P1.y,P1.z)<<endl;
+        cout<<"P2 "<<P2.x<<" "<<P2.y<<" "<<P2.z<<" "<<func(P2.x,P2.y,P2.z)<<endl;
         float m = dist(T.x,T.y,T.z);
         T.x/=m;
         T.y/=m;
@@ -816,16 +889,21 @@ Repere getRepere(Point P)
         R.y = T.x * sin(o) + T.y * cos(o);
         R.z = T.z;
         P1 = {P.x+0.05f*R.x,P.y+0.05f*R.y,P.z+0.05f*R.z};
-        if(dist(P1.x,P1.y,P1.z)<dist(P.x,P.y,P.z))
-        {
-            return getRepere(P1);
-        }
-        else
+        cout<<p1<<" "<<p2<<endl;
+        cout<<"P0 "<<P.x<<" "<<P.y<<" "<<P.z<<" "<<dist(P.x,P.y,P.z)<<endl;
+        cout<<"nP1 "<<P1.x<<" "<<P1.y<<" "<<P1.z<<" "<<dist(P1.x,P1.y,P1.z)<<endl;
+        cout<<"R "<<R.x<<" "<<R.y<<" "<<R.z<<endl;
+        if(dist(P1.x,P1.y,P1.z)>dist(P.x,P.y,P.z))
         {
             P1 = {P.x-0.05f*R.x,P.y-0.05f*R.y,P.z-0.05f*R.z};
-            return getRepere(P1);
+            cout<<"nP2 "<<P1.x<<" "<<P1.y<<" "<<P1.z<<" "<<dist(P1.x,P1.y,P1.z)<<endl;
+            //return getRepere(P1);
         }
-    }
+        cout<<endl;
+        if(func(P1.x,P1.y,P1.z)==-1)
+            exit(0);
+        return getRepere(P1);
+    }*/
 }
 
 
@@ -982,7 +1060,7 @@ void marchingSquare(float x, float y, float pas, int dir, float target, int ind,
             glVertex3f(x,y+pas,0);
             glEnd();
             */
-            if(p1==target || p2==target || p3==target || p4==target)
+            if(p1==target+1 || p2==target+1 || p3==target+1 || p4==target+1)
             {
                 if(dir==0)
                 {
@@ -2441,19 +2519,167 @@ void lancerMarchingSquare(float target, Point Color)
         courbes[target*1000].push_back(P4);
 }
 
-void courbeGradient(Point P, int dir, Point PrevN, vector<PointCourbe> *Pv)
+double getAngle(Point V0, Point V1)
+{
+    double d = dist(V0.x,V0.y,V0.z)*dist(V1.x,V1.y,V1.z);
+    if(d==0)
+        return 0;
+    double c = (V0.x*V1.x+V0.y*V1.y+V0.z*V1.z);
+    double o = acos(clamp(c/d,-1.0,1.0));
+    return abs(o*180.0/M_PI);
+}
+
+Repere getVecteurGradient(Point P, Point PrevN, double dt, double off)
+{
+    double val = func(P.x,P.y,P.z);
+    int d = 1;
+    Repere R = getRepere(P);
+    Point N = R.N;
+    double ang1 = getAngle(PrevN,N);
+    double ang2 = 0;
+    bool plop = false;
+    if(ang1>160)
+    {
+        if(ang1<178)
+        {
+            cout<<"0PPP "<<ang1<<endl;
+        }
+        //cout<<"a0 "<<ang1<<endl;
+        /*glPointSize(20.0f);
+        glColor3f(0,1,1);
+        glBegin(GL_POINTS);
+        glVertex3f(P.x,P.y,P.z);
+        glEnd();*/
+        d=-1;
+    }
+    else
+    {
+        if(ang1>2)
+        {
+            cout<<"0PPP "<<ang1<<endl;
+            /*cout<<"N0 "<<PrevN.x<<" "<<PrevN.y<<endl;
+            cout<<"N1 "<<N.x<<" "<<N.y<<endl;
+            double p1 = func(P.x+0.0001,P.y,P.z);
+            double p2 = func(P.x,P.y+0.0001,P.z);
+            cout<<(1.0-val)*100000<<" "<<(1-p1)*100000<<" "<<(1-p2)*100000<<endl;
+            glPointSize(20.0f);
+            glColor3f(1,1,1);
+            glBegin(GL_POINTS);
+            glVertex3f(P.x,P.y,P.z);
+            glEnd();*/
+        }
+    }
+    Point nP3 = {0,0,0};
+    if(isnan(R.N.x))
+    {
+        cout<<"E"<<endl;
+        N = PrevN;
+        double m = dist(N.x,N.y,N.z);
+        double r = m * dt + off;
+        nP3 = {P.x+N.x*r,P.y+N.y*r,P.z+N.z*r};
+    }
+    else
+    {
+        double m = dist(N.x,N.y,N.z);
+        double r = m * dt + off;
+        double m2 = 0;
+        double r2 = 0;
+        Point nP = {P.x+N.x*r*d,P.y+N.y*r*d,P.z+N.z*r*d};
+        Repere R2 = getRepere(nP);
+        if(!isnan(R2.N.x))
+        {
+            int d2 = d;
+            double ang2 = getAngle(R2.N,N);
+            /*cout<<"a "<<ang1<<" "<<ang2<<endl;
+            cout<<"N0 "<<PrevN.x<<" "<<PrevN.y<<endl;
+            cout<<"N1 "<<N.x<<" "<<N.y<<endl;*/
+            if(ang2>160)
+            {
+                //cout<<"a1 "<<ang2<<endl;
+                d2=-d;
+                if(ang2<178)
+                {
+                    cout<<"OH1 "<<ang2<<endl;
+                }
+            }
+            else
+            {
+                if(ang2>2)
+                {
+                    cout<<"OH2 "<<ang2<<endl;
+                    /*cout<<"1PPP "<<ang2<<" "<<ang1<<" "<<getAngle(R2.N,PrevN)<<endl;
+                    cout<<"N0 "<<PrevN.x<<" "<<PrevN.y<<endl;
+                    cout<<"N1 "<<N.x<<" "<<N.y<<endl;
+                    
+                    double p1 = func(P.x+0.0001,P.y,P.z);
+                    double p2 = func(P.x,P.y+0.0001,P.z);
+                    double p3 = func(nP.x+0.0001,nP.y,nP.z);
+                    double p4 = func(nP.x,nP.y+0.0001,nP.z);
+                    double v = func(nP.x,nP.y,nP.z);
+                    cout<<(1.0-val)*100000<<" "<<(1-p1)*100000<<" "<<(1-p2)*100000<<" ,nP : "<<(1.0-v)*100000<<" "<<(1-p3)*100000<<" "<<(1-p4)*100000<<endl;
+                    glPointSize(20.0f);
+                    glColor3f(1,1,0);
+                    glBegin(GL_POINTS);
+                    glVertex3f(P.x,P.y,P.z);
+                    glEnd();*/
+                }
+            }
+            N = R2.N;
+            m2 = dist(N.x,N.y,N.z);
+            r2 = m2 * dt + off;
+            Point nP2 = {P.x+N.x*r2*d2,P.y+N.y*r2*d2,P.z+N.z*r2*d2};
+            float val1 = val-func(nP.x,nP.y,nP.z);
+            float val2 = val-func(nP2.x,nP2.y,nP2.z);
+            float inter = interpolation(val2,val1);
+            /*cout<<"N2 "<<N.x<<" "<<N.y<<endl;
+            Point N3 = {nP.x-P.x,nP.y-P.y,nP.z-P.z};
+            cout<<"N3 "<<N3.x<<" "<<N3.y<<endl;
+            cout<<"v "<<val1<<" "<<val2<<" "<<inter<<endl;
+            cout<<"P "<<P.x<<" "<<P.y<<endl;
+            cout<<"nP "<<nP.x<<" "<<nP.y<<endl;
+            cout<<"nP2 "<<nP2.x<<" "<<nP2.y<<endl;*/
+            nP3.x = nP.x * inter + (1-inter) * nP2.x;
+            nP3.y = nP.y * inter + (1-inter) * nP2.y;
+            nP3.z = nP.z * inter + (1-inter) * nP2.z;
+            //cout<<"nP3 "<<nP3.x<<" "<<nP3.y<<endl;
+        }
+        else
+        {
+            nP3 = nP;
+        }
+        N = {nP3.x-P.x,nP3.y-P.y,nP3.z-P.z};
+        double r3 = (r+r2)/2.0;
+        N.x/=r3;
+        N.y/=r3;
+        N.z/=r3;
+        double m3 = dist(N.x,N.y,N.z);
+        //cout<<"m "<<m0<<" "<<m2<<" "<<m3<<endl;
+        //cout<<"a "<<a<<" dt "<<dt<<" "<<dt0<<" "<<dt2<<" "<<dt3<<endl;
+        /*N.x *= d;
+        N.y *= d;
+        N.z *= d;*/
+    }
+    return {nP3,N,{0,0,0}};
+}
+
+void courbeGradient(Point P, int dir, Point PrevN, vector<PointCourbe> *Pv, double dt, double off)
 {
     int g = 0;
-    float val = func(P.x,P.y,P.z);
+    double val = func(P.x,P.y,P.z);
     Point N = {0,0,0};
-    float dt = 0.005;
+    float m = dist(PrevN.x,PrevN.y,PrevN.z);
+    int st = 0;
     if(dir!=0)
     {
-        Point P2 = P;
+        int d = 1;
+        cout<<endl<<endl<<endl;
+        Point P2 = addP(P,PrevN,-dt);
         val = func(P.x,P.y,P.z);
-        while(val!=0)
+        double val2 = func(P2.x,P2.y,P2.z);
+        while(val!=-1)
         {
-            
+            //cout<<st<<" "<<P.x<<" "<<P.y<<endl<<endl;
+            int d = 1;
             int iv = 0;
             while(iv<targets.size() && targets[iv]+0.002<val)
             {
@@ -2484,64 +2710,53 @@ void courbeGradient(Point P, int dir, Point PrevN, vector<PointCourbe> *Pv)
                 }
                 iv++;
             }
-            Repere R = getRepere(P);
+            Repere R = getVecteurGradient(P,PrevN,dt,off);
+            Point nP3 = R.P;
             N = R.N;
-            Point nP3 = {0,0,0};
-            if(abs(dist(N.x,N.y,N.z)-1)>0.0001)
+            /*Repere R = getRepere(P);
+            Point N = R.N;
+            double ang1 = getAngle(PrevN,N);
+            if(ang1>160)
             {
-                N = PrevN;
-                nP3 = {P.x+N.x*dt*dir,P.y+N.y*dt*dir,P.z+N.z*dt*dir};
+                //cout<<"a0 "<<ang1<<endl;
+                glPointSize(20.0f);
+                glColor3f(0,1,1);
+                glBegin(GL_POINTS);
+                glVertex3f(P.x,P.y,P.z);
+                glEnd();
+                d=-d;
             }
-            else
-            {
-                Point nP = {P.x+N.x*dt*dir,P.y+N.y*dt*dir,P.z+N.z*dt*dir};
-                Repere R2 = getRepere(nP);
-                if(!isnan(R2.N.x))
-                {
-                    N = R2.N;
-                    Point nP2 = {P.x+N.x*dt*dir,P.y+N.y*dt*dir,P.z+N.z*dt*dir};
-                    float val1 = val-func(nP.x,nP.y,nP.z);
-                    float val2 = val-func(nP2.x,nP2.y,nP2.z);
-                    float inter = interpolation(val2,val1);
-                    nP3.x = nP.x * inter + (1-inter) * nP2.x;
-                    nP3.y = nP.y * inter + (1-inter) * nP2.y;
-                    nP3.z = nP.z * inter + (1-inter) * nP2.z;
-                }
-                else
-                {
-                    nP3 = nP;
-                }
-                N = {nP3.x-P.x,nP3.y-P.y,nP3.z-P.z};
-                N.x *= dir;
-                N.y *= dir;
-                N.z *= dir;
-                float m = dist(N.x,N.y,N.z);
-                N.x/=m;
-                N.y/=m;    
-                N.z/=m;
-            }
-            float o = acos((N.x*PrevN.x+N.y*PrevN.y+N.z*PrevN.z));
-            while(o>2*M_PI)
-            {
-                o-=2*M_PI;
-            }
-            while(o<0)
-            {
-                o+=2*M_PI;
-            }
-            if(abs(o)>M_PI/4)
-                debug<<"Plop"<<endl;
+            if(d==-1)
+                N = addP({0,0,0},N,d);
+            Point nP3 = addP(P,N,1/(20*dt));
+            Point N2 = addP({0,0,0},N,1/(20*dt));
+            cout<<dist(N.x,N.y,N.z)<<" "<<dist(N2.x,N2.y,N2.z)<<" "<<dt<<" "<<1/(20*dt)<<endl;*/
+            //cout<<"N00 "<<PrevN.x<<" "<<PrevN.y<<endl;
             PrevN=N;
+            //cout<<"N01 "<<PrevN.x<<" "<<PrevN.y<<endl;
+            glColor3f(color,color,color);
             glBegin(GL_LINES);
-
             glVertex3f(P.x,P.y,P.z);
             glVertex3f(nP3.x,nP3.y,nP3.z);
             glEnd();
+            if(dir==1)
+            {
+                glColor3f(0,1,0);
+            }
+            else
+            {
+                glColor3f(0,0,1);
+            }
+            glPointSize(5.0f);
+            glBegin(GL_POINTS);
+            glVertex3f(P.x,P.y,P.z);
+            glEnd();
             P2 = P;
             P = nP3;
+            val2 = val;
             val = func(P.x,P.y,P.z);
-                    }
-
+            st++;
+        }
         if(dir==1)
             Pv->push_back({P2,0,-1,-1,-1,-1});
         else
@@ -2549,6 +2764,7 @@ void courbeGradient(Point P, int dir, Point PrevN, vector<PointCourbe> *Pv)
     }
     else
     {
+        cout<<"g"<<endl;
         if(val==0)
             return;
         glColor3f(0,1,0);
@@ -2557,8 +2773,15 @@ void courbeGradient(Point P, int dir, Point PrevN, vector<PointCourbe> *Pv)
         glEnd();
         Repere R = getRepere(P);
         N = R.N;
-        Point nP1 = {P.x+N.x*dt,P.y+N.y*dt,P.z+N.z*dt};
-        Point nP2 = {P.x-N.x*dt,P.y-N.y*dt,P.z-N.z*dt};
+        double m = dist(N.x,N.y,N.z);
+        double r = dt * m + off;
+        Point nP1 = {P.x+N.x*r,P.y+N.y*r,P.z+N.z*r};
+        Point nP2 = {P.x-N.x*r,P.y-N.y*r,P.z-N.z*r};
+        glBegin(GL_POINTS);
+        glColor3f(1,1,0);
+        glVertex3f(nP1.x,nP1.y,nP1.z);
+        glVertex3f(nP2.x,nP2.y,nP2.z);
+        glEnd();
         glBegin(GL_LINES);
         glColor3f(color,color,color);
         glVertex3f(P.x,P.y,P.z);
@@ -2566,9 +2789,11 @@ void courbeGradient(Point P, int dir, Point PrevN, vector<PointCourbe> *Pv)
         glVertex3f(P.x,P.y,P.z);
         glVertex3f(nP2.x,nP2.y,nP2.z);
         glEnd();
-        courbeGradient(nP1,1,N,Pv);
-        courbeGradient(nP2,-1,N,Pv);
-    }    
+        Point N2 = {-N.x,-N.y,-N.z};
+        courbeGradient(nP1,1,N,Pv,dt,off);
+        courbeGradient(nP2,-1,N2,Pv,dt,off);
+    }
+    cout<<"H"<<endl; 
 }
 
 Point addP(Point p1, Point p2, double mult)
@@ -3352,21 +3577,37 @@ glRotatef(cameraAngleY,0.,1.,0.);
     for(int i=-10; i<=10; i++)
     {
         Point P = {-1.0f ,i*0.1f ,0};
+        if(i==10)
+        {
+            pointsImportants.push_back(surface.size());
+        }
         surface.push_back(P);
     }
     for(int i=-10; i<=10; i++)
     {
         Point P = {i*0.1f ,1.0f ,0};
+        if(i==10)
+        {
+            pointsImportants.push_back(surface.size());
+        }
         surface.push_back(P);
     }
     for(int i=10; i>=-10; i--)
     {
         Point P = {1.0f ,i*0.1f,0};
+        if(i==-10)
+        {
+            pointsImportants.push_back(surface.size());
+        }
         surface.push_back(P);
     }
     for(int i=10; i>=-10; i--)
     {
         Point P = {i*0.1f ,-1.0f ,0};
+        if(i==-10)
+        {
+            pointsImportants.push_back(surface.size());
+        }
         surface.push_back(P);
     }
     float min = 1;
@@ -3386,33 +3627,94 @@ glRotatef(cameraAngleY,0.,1.,0.);
             }
         }
     }
+    double GradMax = -1;
+    double GradMin = -1;
     for(int i=-n; i<n; i++)
     {
         for(int j=-n; j<n; j++)
         {
             float xb = (float)(i)/(float)(n);
             float yb = (float)(j)/(float)(n);
+            Point P = {xb,yb,0};
+            Repere R = getRepere(P);
+            double m = dist(R.N.x,R.N.y,R.N.z);
+            if(GradMax==-1 || m>GradMax)
+                GradMax = m;
+            if(GradMin==-1 || m<GradMin)
+                GradMin = m;
             float dn = 1.0f/(float)n;
             float var = func(xb,yb,0);
             glBegin(GL_QUADS);
             glColor3f((var-min)/(max-min),0,0);
-            glVertex3f((float)(i)/n,(float)(j)/n,0);
+            glVertex3f(xb,yb,0);
 
             var = func(xb+dn,yb,0);
             glColor3f((var-min)/(max-min),0,0);
-            glVertex3f((float)(i+1)/n,(float)(j)/n,0);
+            glVertex3f(xb+dn,yb,0);
 
             var = func(xb+dn,yb+dn,0);
             glColor3f((var-min)/(max-min),0,0);
-            glVertex3f((float)(i+1)/n,(float)(j+1)/n,0);
+            glVertex3f(xb+dn,yb+dn,0);
 
             var = func(xb,yb+dn,0);
             glColor3f((var-min)/(max-min),0,0);
-            glVertex3f((float)(i)/n,(float)(j+1)/n,0);
+            glVertex3f(xb,yb+dn,0);
             glEnd();
         }
     }
-
+    double dt = 1;
+    double off = 0;
+    if(GradMax!=GradMin)
+    {
+        dt = (normeMin-normeMax)/(GradMin-GradMax);
+        off = 0.01 - dt*GradMin;
+    }
+    else
+    {
+        dt = 1/(GradMax*10);
+    }
+    cout<<GradMin<<" "<<GradMax<<" "<<dt<<"x + "<<off<<endl;
+    /*glBegin(GL_LINES);
+    glColor3f(1,1,0);
+    glVertex3f(1,-1,0);
+    glVertex3f(-1,1,0);
+    glEnd();
+    vector<PointCourbe> cG;
+    Point P = {pX,pY,0};
+    color = 1;
+    courbeGradient(P,0,{0,0,0},&cG,dt,off);
+    //Repere R = getRepere(P);
+    //P = {0.001,-0.001,0};
+    Repere R = getRepere(P);
+    glBegin(GL_LINES);
+    glColor3f(0,1,0);
+    glVertex3f(P.x,P.y,P.z);
+    glVertex3f(P.x+R.T.x*0.1,P.y+R.T.y*0.1,P.z+R.T.z*0.1);
+    glColor3f(0,0,1);
+    glVertex3f(P.x,P.y,P.z);
+    glVertex3f(P.x+R.N.x*0.1,P.y+R.N.y*0.1,P.z+R.N.z*0.1);
+    glEnd();
+    P = {0.001,0.001,0};
+    R = getRepere(P);
+    glBegin(GL_LINES);
+    glColor3f(1,1,0);
+    glVertex3f(P.x,P.y,P.z);
+    glVertex3f(P.x+R.T.x*0.1,P.y+R.T.y*0.1,P.z+R.T.z*0.1);
+    glColor3f(0,0,0);
+    glVertex3f(P.x,P.y,P.z);
+    glVertex3f(P.x+R.N.x*0.1,P.y+R.N.y*0.1,P.z+R.N.z*0.1);
+    glEnd();
+    P = {-0.001,-0.001,0};
+    R = getRepere(P);
+    glBegin(GL_LINES);
+    glColor3f(0,1,1);
+    glVertex3f(P.x,P.y,P.z);
+    glVertex3f(P.x+R.T.x*0.1,P.y+R.T.y*0.1,P.z+R.T.z*0.1);
+    glColor3f(1,1,1);
+    glVertex3f(P.x,P.y,P.z);
+    glVertex3f(P.x+R.N.x*0.1,P.y+R.N.y*0.1,P.z+R.N.z*0.1);
+    glEnd();*/
+    
     targets.push_back(0.1);
     targets.push_back(0.2);
     targets.push_back(0.3);
@@ -3430,7 +3732,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
         Point C = {v*v,v*v,v*v};
         lancerMarchingSquare(v,C);
     }
-
+    /*
     int nbC = 0;
     float minC = 1;
     float minI = -1;
@@ -3497,6 +3799,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
     int s = 0;
     int nc = -1;
     float nt = -1;
+    
     for(auto it = targets.begin(); it!=targets.end(); it++)
     {
         float v = *it;
@@ -3551,7 +3854,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
         courbeGrad.push_back(cG2);
         
     }
-
+    /*
     //cout<<endl<<endl;;
     for(int i=0; i<courbeGrad.size(); i++)
     {
@@ -3757,6 +4060,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
         }
         courbeFinale[targets[i]*1000] = cs;
     }*/
+    /*
     cout<<"4"<<endl;
     for(int i=0; i<courbeGrad.size();i++)
     {
@@ -3838,6 +4142,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
     }
     cout<<endl<<endl;
     */
+    /*
     targets.insert(targets.begin(),0);
     for(int i=0; i<targets.size(); i++)
     {
@@ -3862,6 +4167,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
 
     
     cout<<"7"<<endl;
+    /*
     for(int i=0; i<courbeGrad.size()-1; i++)
     {
         vector<PointCourbe> cG = courbeGrad[i];
@@ -3923,6 +4229,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
                             PointCourbe Pc3 = iso[Pc2.isoInd-1];
                             grad = courbeGrad[Pc3.graC];
                             Pc2 = grad[Pc3.indGra-1];*/
+    /*
                             Pc2 = grad[grad.size()-1];
                         }
                     }
@@ -4100,7 +4407,52 @@ glRotatef(cameraAngleY,0.,1.,0.);
     }
     cout<<"face0 Debut : "<<i0<<" "<<i02<<endl;
     cout<<"face0 Fin : "<<i1<<" "<<i12<<endl;
-    Point P0 = surface[i0];
+    int dt = 1;
+    int nb = 0;
+    for(int i=i0; i!=i1; i++)
+    {
+        if(i==surface.size())
+        {
+            i=0;
+        }
+        nb++;
+    }
+    int nb2 = 0;
+    for(int i=i0; i!=i1; i--)
+    {
+        if(i==-1)
+        {
+            i=surface.size()-1;
+        }  
+        nb2++;
+    }
+    if(nb2<nb)
+    {
+        dt=-1;
+    }
+    int no = 0;
+    for(int i=i0; i!=i1; i+=dt)
+    {
+        cout<<i<<endl;
+        if(i==-1)
+        {
+            i=surface.size()-1;
+        }
+        if(i==surface.size())
+        {
+            i=0;
+        }
+        for(int j=0; j<pointsImportants.size(); j++)
+        {
+            if(i==pointsImportants[j])
+            {
+                 f0.sommets.push_back({surface[i],0,1,no,-1,-1});
+                no++;
+            }
+        }
+       
+    }
+    /*Point P0 = surface[i0];
     Point P1 = surface[i02];
     float dist0 = dist2(P0,Pc1.P);
     float dist1 = dist2(P1,Pc1.P);
@@ -4151,8 +4503,15 @@ glRotatef(cameraAngleY,0.,1.,0.);
             {
                 i=0;
             }
-            f0.sommets.push_back({surface[i],0,1,no,-1,-1});
-            no++;
+            for(int j=0; j<pointsImportants.size(); j++)
+            {
+                if(i==pointsImportants[j])
+                {
+                     f0.sommets.push_back({surface[i],0,1,no,-1,-1});
+                    no++;
+                }
+            }
+           
         }
     }
     else
@@ -4202,11 +4561,18 @@ glRotatef(cameraAngleY,0.,1.,0.);
             {
                 i=0;
             }
-            f0.sommets.push_back({surface[i],0,1,no,-1,-1});
-            no++;
+            for(int j=0; j<pointsImportants.size(); j++)
+            {
+                if(i==pointsImportants[j])
+                {
+                     f0.sommets.push_back({surface[i],0,1,no,-1,-1});
+                    no++;
+                }
+            }
         }
     }
-
+    */
+    /*
     listeFace.insert(listeFace.begin(),f0);
     c0 = courbeGrad[courbeGrad.size()-1];
     for(int i=0; i<c0.size(); i++)
@@ -4279,7 +4645,51 @@ glRotatef(cameraAngleY,0.,1.,0.);
     }
     cout<<"face0 Debut : "<<i1<<" "<<i12<<endl;
     cout<<"face0 Fin : "<<i0<<" "<<i02<<endl;
-    P0 = surface[i1];
+    dt = 1;
+    nb = 0;
+    for(int i=i1; i!=i0; i++)
+    {
+        if(i==surface.size())
+        {
+            i=0;
+        }
+        nb++;
+    }
+    nb2 = 0;
+    for(int i=i1; i!=i0; i--)
+    {
+        if(i==-1)
+        {
+            i=surface.size()-1;
+        }
+        nb2++;
+    }
+    if(nb2<nb)
+    {
+        dt=-1;
+    }
+    no = 0;
+    for(int i=i1; i!=i0; i+=dt)
+    {
+        cout<<i<<endl;
+        if(i==-1)
+        {
+            i=surface.size()-1;
+        }
+        if(i==surface.size())
+        {
+            i=0;
+        }
+        for(int j=0; j<pointsImportants.size(); j++)
+        {
+            if(i==pointsImportants[j])
+            {
+                 f1.sommets.push_back({surface[i],0,1,no,-1,-1});
+                no++;
+            }
+        }
+    }
+    /*P0 = surface[i1];
     P1 = surface[i12];
     dist0 = dist2(P0,Pc0.P);
     dist1 = dist2(P1,Pc0.P);
@@ -4329,8 +4739,14 @@ glRotatef(cameraAngleY,0.,1.,0.);
             {
                 i=0;
             }
-            f1.sommets.push_back({surface[i],0,2,no,-1,-1});
-            no++;
+            for(int j=0; j<pointsImportants.size(); j++)
+            {
+                if(i==pointsImportants[j])
+                {
+                     f1.sommets.push_back({surface[i],0,1,no,-1,-1});
+                    no++;
+                }
+            }
         }
     }
     else
@@ -4379,12 +4795,18 @@ glRotatef(cameraAngleY,0.,1.,0.);
             {
                 i=0;
             }
-            f1.sommets.push_back({surface[i],0,2,no,-1,-1});
-            no++;
+            for(int j=0; j<pointsImportants.size(); j++)
+            {
+                if(i==pointsImportants[j])
+                {
+                     f1.sommets.push_back({surface[i],0,1,no,-1,-1});
+                    no++;
+                }
+            }
         }
     }
-
-    listeFace.push_back(f1);
+    */
+    //listeFace.push_back(f1);
     //cout<<nbF<<" / "<<listeFace.size()<<endl;
     
     int h = 60;
@@ -4475,6 +4897,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
             cout<<endl;
     }
     */
+    /*
     int tid=0;
     cout<<"Plop0"<<endl;
     float o = -M_PI/2;
@@ -4600,53 +5023,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
             {
                 mult2 = 0.05;
             }
-            /*if(i==nbF && nbE==0)
-            {
-                glBegin(GL_LINE_LOOP);
-                glColor3f(0,0,1);
-                glVertex3f(Pc0.P.x,Pc0.P.y,Pc0.P.z);
-                for(int a=0; a<=20; a++)
-                {
-                    Point P = Pc0.P;
-                    P.x += cos(a*M_PI/10)*dp;
-                    P.y += sin(a*M_PI/10)*dp;
-                    glVertex3f(P.x,P.y,P.z);
-                }
-                glEnd();
-                glBegin(GL_LINE_LOOP);
-                glColor3f(1,0,1);
-                glVertex3f(Pc0.P.x,Pc0.P.y,Pc0.P.z);
-                for(int a=0; a<=20; a++)
-                {
-                    Point P = Pc0.P;
-                    P.x += cos(a*M_PI/10)*dp*mult1;
-                    P.y += sin(a*M_PI/10)*dp*mult1;
-                    glVertex3f(P.x,P.y,P.z);
-                }
-                glEnd();
-                glBegin(GL_LINE_LOOP);
-                glColor3f(1,1,0);
-                glVertex3f(Pc.P.x,Pc.P.y,Pc.P.z);
-                for(int a=0; a<=20; a++)
-                {
-                    Point P = Pc.P;
-                    P.x += cos(a*M_PI/10)*dp;
-                    P.y += sin(a*M_PI/10)*dp;
-                    glVertex3f(P.x,P.y,P.z);
-                }
-                glEnd();
-                glBegin(GL_LINE_LOOP);
-                glColor3f(1,1,1);
-                glVertex3f(Pc.P.x,Pc.P.y,Pc.P.z);
-                for(int a=0; a<=20; a++)
-                {
-                    Point P = Pc.P;
-                    P.x += cos(a*M_PI/10)*dp*mult2;
-                    P.y += sin(a*M_PI/10)*dp*mult2;
-                    glVertex3f(P.x,P.y,P.z);
-                }
-                glEnd();
-            }*/
+            
             glColor3f(0,1,0);
             //glColor3f((float)i/(float)listeFace.size(),1,0);
             hes[str]->controleI = addP(Pc0.P,R.T,dir*dp*mult1);
@@ -4655,18 +5032,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
             float avg = (hes[str]->densityO + hes[str]->densityI)/2;
             somme+=avg*l;
             divid+=l;
-            /*if(i==nbF && nbE==0)
-            {
-                glBegin(GL_POINTS);
-                glPointSize(2.0f);
-                glColor3f(1,0,1);
-                glVertex3f(hes[str]->incident.x,hes[str]->incident.y,hes[str]->incident.z);
-                glVertex3f(hes[str]->controleI.x,hes[str]->controleI.y,hes[str]->controleI.z);
-                glColor3f(1,1,1);
-                glVertex3f(hes[str]->origine.x,hes[str]->origine.y,hes[str]->origine.z);
-                glVertex3f(hes[str]->controleO.x,hes[str]->controleO.y,hes[str]->controleO.z);
-                glEnd();
-            }*/
+            
         }
         else
         {
@@ -4688,53 +5054,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
             {
                 mult2 = 0.1;
             }
-            /*if(i==nbF && nbE==0)
-            {
-                glBegin(GL_LINE_LOOP);
-                glColor3f(0,0,1);
-                glVertex3f(Pc0.P.x,Pc0.P.y,Pc0.P.z);
-                for(int a=0; a<=20; a++)
-                {
-                    Point P = Pc0.P;
-                    P.x += cos(a*M_PI/10)*dp;
-                    P.y += sin(a*M_PI/10)*dp;
-                    glVertex3f(P.x,P.y,P.z);
-                }
-                glEnd();
-                glBegin(GL_LINE_LOOP);
-                glColor3f(1,0,1);
-                glVertex3f(Pc0.P.x,Pc0.P.y,Pc0.P.z);
-                for(int a=0; a<=20; a++)
-                {
-                    Point P = Pc0.P;
-                    P.x += cos(a*M_PI/10)*dp*mult1;
-                    P.y += sin(a*M_PI/10)*dp*mult1;
-                    glVertex3f(P.x,P.y,P.z);
-                }
-                glEnd();
-                glBegin(GL_LINE_LOOP);
-                glColor3f(1,1,0);
-                glVertex3f(Pc.P.x,Pc.P.y,Pc.P.z);
-                for(int a=0; a<=20; a++)
-                {
-                    Point P = Pc.P;
-                    P.x += cos(a*M_PI/10)*dp;
-                    P.y += sin(a*M_PI/10)*dp;
-                    glVertex3f(P.x,P.y,P.z);
-                }
-                glEnd();
-                glBegin(GL_LINE_LOOP);
-                glColor3f(1,1,1);
-                glVertex3f(Pc.P.x,Pc.P.y,Pc.P.z);
-                for(int a=0; a<=20; a++)
-                {
-                    Point P = Pc.P;
-                    P.x += cos(a*M_PI/10)*dp*mult2;
-                    P.y += sin(a*M_PI/10)*dp*mult2;
-                    glVertex3f(P.x,P.y,P.z);
-                }
-                glEnd();
-            }*/
+            
             glColor3f(0,1,0);
             //glColor3f((float)i/(float)listeFace.size(),1,0);
             hes[str]->controleI = addP(Pc0.P,R.N,dir*dp*mult1);
@@ -4743,18 +5063,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
             float avg = (hes[str]->densityO + hes[str]->densityI)/2;
             somme+=avg*l;
             divid+=l;
-            /*if(i==nbF && nbE==0)
-            {
-                glBegin(GL_POINTS);
-                glPointSize(2.0f);
-                glColor3f(1,0,1);
-                glVertex3f(hes[str]->incident.x,hes[str]->incident.y,hes[str]->incident.z);
-                glVertex3f(hes[str]->controleI.x,hes[str]->controleI.y,hes[str]->controleI.z);
-                glColor3f(1,1,1);
-                glVertex3f(hes[str]->origine.x,hes[str]->origine.y,hes[str]->origine.z);
-                glVertex3f(hes[str]->controleO.x,hes[str]->controleO.y,hes[str]->controleO.z);
-                glEnd();
-            }*/
+            
         }
         hes[str]->densityCI = val(hes[str]->controleI.x,hes[str]->controleI.y,hes[str]->controleI.z);
         hes[str]->densityCO = val(hes[str]->controleO.x,hes[str]->controleO.y,hes[str]->controleO.z);
@@ -4875,53 +5184,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
                 {
                     mult2 = 0.05;
                 }
-                /*if(i==nbF && nbE==j)
-                {
-                    glBegin(GL_LINE_LOOP);
-                    glColor3f(0,0,1);
-                    glVertex3f(Pc1.P.x,Pc1.P.y,Pc1.P.z);
-                    for(int a=0; a<=20; a++)
-                    {
-                        Point P = Pc1.P;
-                        P.x += cos(a*M_PI/10)*dp;
-                        P.y += sin(a*M_PI/10)*dp;
-                        glVertex3f(P.x,P.y,P.z);
-                    }
-                    glEnd();
-                    glBegin(GL_LINE_LOOP);
-                    glColor3f(1,0,1);
-                    glVertex3f(Pc1.P.x,Pc1.P.y,Pc1.P.z);
-                    for(int a=0; a<=20; a++)
-                    {
-                        Point P = Pc1.P;
-                        P.x += cos(a*M_PI/10)*dp*mult1;
-                        P.y += sin(a*M_PI/10)*dp*mult1;
-                        glVertex3f(P.x,P.y,P.z);
-                    }
-                    glEnd();
-                    glBegin(GL_LINE_LOOP);
-                    glColor3f(1,1,0);
-                    glVertex3f(Pc2.P.x,Pc2.P.y,Pc2.P.z);
-                    for(int a=0; a<=20; a++)
-                    {
-                        Point P = Pc2.P;
-                        P.x += cos(a*M_PI/10)*dp;
-                        P.y += sin(a*M_PI/10)*dp;
-                        glVertex3f(P.x,P.y,P.z);
-                    }
-                    glEnd();
-                    glBegin(GL_LINE_LOOP);
-                    glColor3f(1,1,1);
-                    glVertex3f(Pc2.P.x,Pc2.P.y,Pc2.P.z);
-                    for(int a=0; a<=20; a++)
-                    {
-                        Point P = Pc2.P;
-                        P.x += cos(a*M_PI/10)*dp*mult2;
-                        P.y += sin(a*M_PI/10)*dp*mult2;
-                        glVertex3f(P.x,P.y,P.z);
-                    }
-                    glEnd();
-                }*/
+                
                 glColor3f(0,1,0);
                 //glColor3f((float)i/(float)listeFace.size(),1,0);
                 hes[str1+":"+str2]->controleO = addP(Pc1.P,R.T,dir*dp*mult1);
@@ -4930,18 +5193,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
                 float avg = (hes[str1+":"+str2]->densityO + hes[str1+":"+str2]->densityI)/2;
                 somme+=avg*l;
                 divid+=l;
-                /*if(i==nbF && nbE==j)
-                {
-                    glBegin(GL_POINTS);
-                    glPointSize(2.0f);
-                    glColor3f(1,0,1);
-                    glVertex3f(hes[str1+":"+str2]->incident.x,hes[str1+":"+str2]->incident.y,hes[str1+":"+str2]->incident.z);
-                    glVertex3f(hes[str1+":"+str2]->controleI.x,hes[str1+":"+str2]->controleI.y,hes[str1+":"+str2]->controleI.z);
-                    glColor3f(1,1,1);
-                    glVertex3f(hes[str1+":"+str2]->origine.x,hes[str1+":"+str2]->origine.y,hes[str1+":"+str2]->origine.z);
-                    glVertex3f(hes[str1+":"+str2]->controleO.x,hes[str1+":"+str2]->controleO.y,hes[str1+":"+str2]->controleO.z);
-                    glEnd();
-                }*/
+                
             }
             else
             {
@@ -4963,53 +5215,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
                 {
                     mult2 = 0.1;
                 }
-                /*if(i==nbF && nbE==j)
-                {
-                    glBegin(GL_LINE_LOOP);
-                    glColor3f(0,0,1);
-                    glVertex3f(Pc1.P.x,Pc1.P.y,Pc1.P.z);
-                    for(int a=0; a<=20; a++)
-                    {
-                        Point P = Pc1.P;
-                        P.x += cos(a*M_PI/10)*dp;
-                        P.y += sin(a*M_PI/10)*dp;
-                        glVertex3f(P.x,P.y,P.z);
-                    }
-                    glEnd();
-                    glBegin(GL_LINE_LOOP);
-                    glColor3f(1,0,1);
-                    glVertex3f(Pc1.P.x,Pc1.P.y,Pc1.P.z);
-                    for(int a=0; a<=20; a++)
-                    {
-                        Point P = Pc1.P;
-                        P.x += cos(a*M_PI/10)*dp*mult1;
-                        P.y += sin(a*M_PI/10)*dp*mult1;
-                        glVertex3f(P.x,P.y,P.z);
-                    }
-                    glEnd();
-                    glBegin(GL_LINE_LOOP);
-                    glColor3f(1,1,0);
-                    glVertex3f(Pc2.P.x,Pc2.P.y,Pc2.P.z);
-                    for(int a=0; a<=20; a++)
-                    {
-                        Point P = Pc2.P;
-                        P.x += cos(a*M_PI/10)*dp;
-                        P.y += sin(a*M_PI/10)*dp;
-                        glVertex3f(P.x,P.y,P.z);
-                    }
-                    glEnd();
-                    glBegin(GL_LINE_LOOP);
-                    glColor3f(1,1,1);
-                    glVertex3f(Pc2.P.x,Pc2.P.y,Pc2.P.z);
-                    for(int a=0; a<=20; a++)
-                    {
-                        Point P = Pc2.P;
-                        P.x += cos(a*M_PI/10)*dp*mult2;
-                        P.y += sin(a*M_PI/10)*dp*mult2;
-                        glVertex3f(P.x,P.y,P.z);
-                    }
-                    glEnd();
-                }*/
+                
                 glColor3f(0,1,0);
                 //glColor3f((float)i/(float)listeFace.size(),1,0);
                 hes[str1+":"+str2]->controleO = addP(Pc1.P,R.N,dir*dp*mult1);
@@ -5018,18 +5224,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
                 float avg = (hes[str1+":"+str2]->densityO + hes[str1+":"+str2]->densityI)/2;
                 somme+=avg*l;
                 divid+=l;
-                /*if(i==nbF && nbE==j)
-                {
-                    glBegin(GL_POINTS);
-                    glPointSize(2.0f);
-                    glColor3f(1,0,1);
-                    glVertex3f(hes[str1+":"+str2]->incident.x,hes[str1+":"+str2]->incident.y,hes[str1+":"+str2]->incident.z);
-                    glVertex3f(hes[str1+":"+str2]->controleI.x,hes[str1+":"+str2]->controleI.y,hes[str1+":"+str2]->controleI.z);
-                    glColor3f(1,1,1);
-                    glVertex3f(hes[str1+":"+str2]->origine.x,hes[str1+":"+str2]->origine.y,hes[str1+":"+str2]->origine.z);
-                    glVertex3f(hes[str1+":"+str2]->controleO.x,hes[str1+":"+str2]->controleO.y,hes[str1+":"+str2]->controleO.z);
-                    glEnd();
-                }*/
+                
             }
             hes[str1+":"+str2]->densityCI = val(hes[str1+":"+str2]->controleI.x,hes[str1+":"+str2]->controleI.y,hes[str1+":"+str2]->controleI.z);
             hes[str1+":"+str2]->densityCO = val(hes[str1+":"+str2]->controleO.x,hes[str1+":"+str2]->controleO.y,hes[str1+":"+str2]->controleO.z);
@@ -5102,7 +5297,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
             he = he->next;
         }while(he->id!=id);*/
     //}
-    
+    /*
     if(nbF!=-1)
     {
         for(int i=0; i<Faces.size(); i++)
@@ -5160,9 +5355,10 @@ glRotatef(cameraAngleY,0.,1.,0.);
         }while(he->id != id_ori); 
     }
     */
+    /*
     ofstream myfile;
     myfile.open ("output.json",ios::out | ios::trunc);
-    myfile << "{" <<endl<<"\"\tFaces\":["<<endl;
+    myfile << "{" <<endl<<"\t\"Faces\":["<<endl;
     for(int i=0;i<Faces.size();i++)
     {
         //cout<<i<<endl;
@@ -5182,7 +5378,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
             P = he->controleI;
             myfile<<"\t\t\t\t\t\t{"<<endl<<"\t\t\t\t\t\t\t\"x\":"<<P.x<<","<<endl<<"\t\t\t\t\t\t\t\"y\":"<<P.y<<","<<endl<<"\t\t\t\t\t\t\t\"z\":"<<P.z<<","<<endl<<"\t\t\t\t\t\t\t\"Density\":"<<he->densityCI<<endl<<"\t\t\t\t\t\t},"<<endl;
             P = he->incident;
-            myfile<<"\t\t\t\t\t\t{"<<endl<<"\t\t\t\t\t\t\t\"x\":"<<P.x<<","<<endl<<"\t\t\t\t\t\t\t\"y\":"<<P.y<<","<<endl<<"\t\t\t\t\t\t\t\"z\":"<<P.z<<","<<endl<<"\t\t\t\t\t\t\t\"Density\":"<<he->densityI<<endl<<"\t\t\t\t\t\t},"<<endl;
+            myfile<<"\t\t\t\t\t\t{"<<endl<<"\t\t\t\t\t\t\t\"x\":"<<P.x<<","<<endl<<"\t\t\t\t\t\t\t\"y\":"<<P.y<<","<<endl<<"\t\t\t\t\t\t\t\"z\":"<<P.z<<","<<endl<<"\t\t\t\t\t\t\t\"Density\":"<<he->densityI<<endl<<"\t\t\t\t\t\t}"<<endl;
             myfile<<"\t\t\t\t\t],"<<endl;
             //ADJACENCE
             half_edge* opp = he->opposite;
@@ -5215,12 +5411,21 @@ glRotatef(cameraAngleY,0.,1.,0.);
                 myfile<<"\t\t\t\t\t\t\"Edge\":-1"<<endl;
             }
             myfile<<"\t\t\t\t\t}"<<endl;
-            myfile<<"\t\t\t\t},"<<endl;
+            myfile<<"\t\t\t\t}";
             he = he->next;
+            if(he->id!=id_ori)
+                myfile<<","<<endl;
+            else
+                myfile<<endl;
         }while(he->id != id_ori); 
-        myfile<<"\t\t\t],"<<endl;
-        myfile<<"\t\t},"<<endl;
+        myfile<<"\t\t\t]"<<endl;
+        myfile<<"\t\t}";
+        if(i!=Faces.size()-1)
+            myfile<<","<<endl;
+        else
+            myfile<<endl;
     }
+    myfile<<"\t]"<<endl<<"}";
     myfile.close();
     cout<<"Plop3"<<endl;
     /*
@@ -5328,19 +5533,19 @@ void clavier(unsigned char touche,int x,int y)
       glutPostRedisplay();
       break;
   case 'x':
-    decX+=0.1;
+    pX+=0.1;
     glutPostRedisplay();
     break;
 case 'X':
-    decX-=0.1;
+    pX-=0.1;
     glutPostRedisplay();
     break;
 case 'y':
-    decY+=0.1;
+    pY+=0.1;
     glutPostRedisplay();
     break;
 case 'Y':
-    decY-=0.1;
+    pY-=0.1;
     glutPostRedisplay();
     break;
     case 'f': //* affichage en mode fil de fer 
