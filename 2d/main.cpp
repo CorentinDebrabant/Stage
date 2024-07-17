@@ -170,8 +170,8 @@ float decX = 0;
 float decY = 0;
 int dir = -1;
 
-double pX = 0.1;
-double pY = 0.1;
+double pX = 0;
+double pY = 0;
 float dp = 0.0001;
 
 void idle()
@@ -363,6 +363,7 @@ double val(double x, double y, double z)
     */
     
     double v = 0.5*cos(x)+0.5*cos(3*x+2*y);
+    v/=2;
     v+=0.5;
     return v;
 }
@@ -2883,7 +2884,9 @@ void courbeGradient(Point P, int dir, Point PrevN, vector<PointCourbe> *Pv, doub
         //cout<<dir<<endl;
         int d = 1;
         //cout<<endl<<endl<<endl;
-        Point P2 = addP(P,PrevN,-dt);
+        double m = dist(PrevN.x,PrevN.y,PrevN.z);
+        double r = dt * m + off;
+        Point P2 = addP(P,PrevN,-r/m);
         val = func(P.x,P.y,P.z);
         double val2 = func(P2.x,P2.y,P2.z);
         while(val!=-1)
@@ -2923,16 +2926,16 @@ void courbeGradient(Point P, int dir, Point PrevN, vector<PointCourbe> *Pv, doub
             for(int iv=0; iv<targets.size()-1; iv++)
             {
                 double v = targets[iv];
-                if((val2<v && val>v) || (val2>v && val<v))
+                if((val2<=v && val>=v) || (val2>=v && val<=v))
                 {
                     //cout<<endl<<st<<" "<<P.x<<" "<<P.y<<" "<<val2<<" "<<val<<endl;
                     double inter = interpolation(val,val2);
                     Point Pv = {0,0,0};
+                    cout<<v<<endl;
                     Pv.x = P.x * inter + P2.x * (1-inter);
                     Pv.y = P.y * inter + P2.y * (1-inter);
                     Pv.z = P.z * inter + P2.z * (1-inter);
                     Point c = hsv2rgb(v,1,1);
-                    cout<<v<<endl;
                     glColor3f(c.x,c.y,c.z);
                     glBegin(GL_POINTS);
                     glVertex3f(Pv.x,Pv.y,Pv.z);
@@ -2941,7 +2944,7 @@ void courbeGradient(Point P, int dir, Point PrevN, vector<PointCourbe> *Pv, doub
                 else
                 {
                     double v2 = targets[iv+1];
-                    if(val<v2 && val>v && val2<v2 && val2>v)
+                    if(val<=v2 && val>=v && val2<=v2 && val2>=v)
                     {
                         double d0 = abs(val-v);
                         double d1 = abs(val2-v);
@@ -2949,52 +2952,117 @@ void courbeGradient(Point P, int dir, Point PrevN, vector<PointCourbe> *Pv, doub
                         double d3 = abs(val2-v2);
                         if(d0<0.05 && d1<0.05)
                         {
-                            cout<<"v "<<v<<endl;
                             Point P0 = P;
                             Point P1 = P2;
-                            for(int j=0; j<3; j++)
+                            while(dist2(P0,P1)>normeMin*0.0001)
                             {
-                                for(int i=0; i<10; i++)
+                                int iMin = 0;
+                                double min = abs(func(P0.x,P0.y,P0.z)-v);
+                                for(int i=1; i<=10; i++)
                                 {
                                     double inter = (double)i/10.0;
                                     Point Pv = {0,0,0};
-                                    Pv.x = P.x * inter + P2.x * (1-inter);
-                                    Pv.y = P.y * inter + P2.y * (1-inter);
-                                    Pv.z = P.z * inter + P2.z * (1-inter);
+                                    Pv.x = P0.x * inter + P1.x * (1-inter);
+                                    Pv.y = P0.y * inter + P1.y * (1-inter);
+                                    Pv.z = P0.z * inter + P1.z * (1-inter);
                                     double vP = func(Pv.x,Pv.y,Pv.z);
-                                    if(abs(vP-v)<0.0000001)
+                                    if(abs(vP-v)<min)
                                     {
-                                        cout<<v<<endl;
-                                        Point c = hsv2rgb(v,1,1);
-                                        glColor3f(c.x,c.y,c.z);
-                                        glBegin(GL_POINTS);
-                                        glVertex3f(Pv.x,Pv.y,Pv.z);
-                                        glEnd();
-                                        break;
+                                        iMin = i;
+                                        min = abs(vP-v);
                                     }
                                 }
-                            }  
-                        }
-                        if(d2<0.05 && d3<0.05)
-                        {
-                            cout<<"v2 "<<v2<<endl;
-                            for(int i=0; i<100; i++)
-                            {
-                                double inter = (double)i/100.0;
-                                Point Pv = {0,0,0};
-                                Pv.x = P.x * inter + P2.x * (1-inter);
-                                Pv.y = P.y * inter + P2.y * (1-inter);
-                                Pv.z = P.z * inter + P2.z * (1-inter);
-                                double vP = func(Pv.x,Pv.y,Pv.z);
-                                if(abs(vP-v2)<0.0000001)
+                                if(min<0.0000001)
                                 {
-                                    cout<<v2<<endl;
+                                    cout<<v<<endl;
                                     Point c = hsv2rgb(v,1,1);
                                     glColor3f(c.x,c.y,c.z);
+                                    double inter = (double)iMin/10.0;
+                                    Point Pv = {0,0,0};
+                                    Pv.x = P0.x * inter + P1.x * (1-inter);
+                                    Pv.y = P0.y * inter + P1.y * (1-inter);
+                                    Pv.z = P0.z * inter + P1.z * (1-inter);
                                     glBegin(GL_POINTS);
                                     glVertex3f(Pv.x,Pv.y,Pv.z);
                                     glEnd();
                                     break;
+                                }
+                                else
+                                {
+                                    if(iMin==0)
+                                        iMin = 1;
+                                    if(iMin==10)
+                                        iMin = 9;
+                                    double inter = (double)(iMin-1)/10.0;
+                                    Point Pv = {0,0,0};
+                                    Pv.x = P0.x * inter + P1.x * (1-inter);
+                                    Pv.y = P0.y * inter + P1.y * (1-inter);
+                                    Pv.z = P0.z * inter + P1.z * (1-inter);
+                                    double inter2 = (double)(iMin-1)/10.0;
+                                    Point Pv2 = {0,0,0};
+                                    Pv2.x = P0.x * inter2 + P1.x * (1-inter2);
+                                    Pv2.y = P0.y * inter2 + P1.y * (1-inter2);
+                                    Pv2.z = P0.z * inter2 + P1.z * (1-inter2);
+                                    P0 = Pv;
+                                    P1 = Pv2;
+                                }
+                            }
+                        }
+                        if(d2<0.05 && d3<0.05)
+                        {
+                            Point P0 = P;
+                            Point P1 = P2;
+                            while(dist2(P0,P1)>normeMin*0.0001)
+                            {
+                                int iMin = 0;
+                                double min = abs(func(P0.x,P0.y,P0.z)-v2);
+                                for(int i=1; i<=10; i++)
+                                {
+                                    double inter = (double)i/10.0;
+                                    Point Pv = {0,0,0};
+                                    Pv.x = P1.x * inter + P0.x * (1-inter);
+                                    Pv.y = P1.y * inter + P0.y * (1-inter);
+                                    Pv.z = P1.z * inter + P0.z * (1-inter);
+                                    double vP = func(Pv.x,Pv.y,Pv.z);
+                                    if(abs(vP-v2)<min)
+                                    {
+                                        iMin = i;
+                                        min = abs(vP-v2);
+                                    }
+                                }
+                                if(min<0.0000001)
+                                {
+                                    cout<<v2<<endl;
+                                    Point c = hsv2rgb(v,1,1);
+                                    glColor3f(c.x,c.y,c.z);
+                                    double inter = (double)iMin/10.0;
+                                    Point Pv = {0,0,0};
+                                    Pv.x = P1.x * inter + P0.x * (1-inter);
+                                    Pv.y = P1.y * inter + P0.y * (1-inter);
+                                    Pv.z = P1.z * inter + P0.z * (1-inter);
+                                    glBegin(GL_POINTS);
+                                    glVertex3f(Pv.x,Pv.y,Pv.z);
+                                    glEnd();
+                                    break;
+                                }
+                                else
+                                {
+                                    if(iMin==0)
+                                        iMin = 1;
+                                    if(iMin==10)
+                                        iMin = 9;
+                                    double inter = (double)(iMin-1)/10.0;
+                                    Point Pv = {0,0,0};
+                                    Pv.x = P1.x * inter + P0.x * (1-inter);
+                                    Pv.y = P1.y * inter + P0.y * (1-inter);
+                                    Pv.z = P1.z * inter + P0.z * (1-inter);
+                                    double inter2 = (double)(iMin+1)/10.0;
+                                    Point Pv2 = {0,0,0};
+                                    Pv2.x = P1.x * inter2 + P0.x * (1-inter2);
+                                    Pv2.y = P1.y * inter2 + P0.y * (1-inter2);
+                                    Pv2.z = P1.z * inter2 + P0.z * (1-inter2);
+                                    P0 = Pv;
+                                    P1 = Pv2;
                                 }
                             }
                         }
@@ -3987,6 +4055,7 @@ glRotatef(cameraAngleY,0.,1.,0.);
     
     vector<PointCourbe> cG;
     Point P = {pX,pY,0};
+    cout<<func(pX,pY,0)<<endl;
     courbeGradient(P,0,{0,0,0},&cG,dt,off);
     //Repere R = getRepere(P);
     //P = {0.001,-0.001,0};
