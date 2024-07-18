@@ -2607,87 +2607,144 @@ void newMarchingSquare(double target, double pas)
             }
             else
             {
-                if(abs(Pi.z-pas)<min)
+                
+                glPointSize(1.0f);
+                glBegin(GL_POINTS);
+                glColor3f(0,1,0);
+                glVertex3f(P.x,P.y,P.z);
+                glEnd();
+                if(v0==0)
                 {
-                    glPointSize(1.0f);
-                    glBegin(GL_POINTS);
-                    glColor3f(0,1,0);
-                    glVertex3f(P.x,P.y,P.z);
-                    glEnd();
-                    if(v0==0)
+                    if((v1>0 && v3<0) || (v1<0 && v3>0))
                     {
-                        if((v1>0 && v3<0) || (v1<0 && v3>0))
-                        {
-                            if(abs(v1)<abs(v3))
-                                v0 = copysign(min,v1);
-                            else
-                                v0 = copysign(min,v3);
-                        }
+                        if(abs(v1)<abs(v3))
+                            v0 = copysign(min,v1);
                         else
-                        {
-                            if(abs(v1)>abs(v3))
-                                v0 = copysign(min,-v1);
-                            else
-                                v0 = copysign(min,-v3);
-                        }
-                    }
-                    if(v1==0)
-                    {
-                        if((v0>0 && v2<0) || (v0<0 && v2>0))
-                        {
-                            if(abs(v0)<abs(v2))
-                                v1 = copysign(min,v0);
-                            else
-                                v1 = copysign(min,v2);
-                        }
-                        else
-                        {
-                            v1 = copysign(min,-v0);
-                        }
-                    }
-                    if(v2==0)
-                    {
-                        if((v1>0 && v3<0) || (v1<0 && v3>0))
-                        {
-                            if(abs(v1)<abs(v3))
-                                v2 = copysign(min,v1);
-                            else
-                                v2 = copysign(min,v3);
-                        }
-                        else
-                        {
-                            v2 = copysign(min,-v1);
-                        }
-                    }
-                    if(v3==0)
-                    {
-                        if((v0>0 && v2<0) || (v0<0 && v2>0))
-                        {
-                            if(abs(v0)<abs(v2))
-                                v3 = copysign(min,v0);
-                            else
-                                v3 = copysign(min,v2);
-                        }
-                        else
-                        {
-                            v3 = copysign(min,-v0);
-                        }
-                    }
-                    string s = to_string(v0>0)+to_string(v1>0)+to_string(v2>0)+to_string(v3>0);
-                    int ch = msTable[s];
-                    int nb = squares.size();
-                    squares.push_back(new Square);
-                    squares[nb]->P = P;
-                    squares[nb]->type = ch;
-                    squares[nb]->pas = Pi.z;
-                    if(ch!=0)
-                    {
-                        squares[nb]->courbe = n;
-                        n++;
+                            v0 = copysign(min,v3);
                     }
                     else
-                        squares[nb]->courbe = -1;
-                    marque[k]=squares[nb];
+                    {
+                        if(abs(v1)>abs(v3))
+                            v0 = copysign(min,-v1);
+                        else
+                            v0 = copysign(min,-v3);
+                    }
+                }
+                if(v1==0)
+                {
+                    if((v0>0 && v2<0) || (v0<0 && v2>0))
+                    {
+                        if(abs(v0)<abs(v2))
+                            v1 = copysign(min,v0);
+                        else
+                            v1 = copysign(min,v2);
+                    }
+                    else
+                    {
+                        v1 = copysign(min,-v0);
+                    }
+                }
+                if(v2==0)
+                {
+                    if((v1>0 && v3<0) || (v1<0 && v3>0))
+                    {
+                        if(abs(v1)<abs(v3))
+                            v2 = copysign(min,v1);
+                        else
+                            v2 = copysign(min,v3);
+                    }
+                    else
+                    {
+                        v2 = copysign(min,-v1);
+                    }
+                }
+                if(v3==0)
+                {
+                    if((v0>0 && v2<0) || (v0<0 && v2>0))
+                    {
+                        if(abs(v0)<abs(v2))
+                            v3 = copysign(min,v0);
+                        else
+                            v3 = copysign(min,v2);
+                    }
+                    else
+                    {
+                        v3 = copysign(min,-v0);
+                    }
+                }
+                string s = to_string(v0>0)+to_string(v1>0)+to_string(v2>0)+to_string(v3>0);
+                int ch = msTable[s];
+                if(ch==0)
+                {
+                    if(abs(v0)<0.05 && abs(v1)<0.05 && abs(v2)<0.05 && abs(v3)<0.05)
+                    {
+                        bool p01 = false;
+                        bool p03 = false;
+                        bool p12 = false;
+                        bool p23 = false;
+                        for(int i=-9; i<10; i++)
+                        {
+                            double p = (double)i/10.0;
+                            Point P01 = {P.x-Pi.z,P.y+p*Pi.z,P.z};
+                            Point P12 = {P.x+p*Pi.z,P.y+Pi.z,P.z};
+                            Point P23 = {P.x+Pi.z,P.y+p*Pi.z,P.z};
+                            Point P03 = {P.x+p*Pi.z,P.y-Pi.z,P.z};
+                            double v01 = abs(target-func(P01.x,P01.y,P01.z));
+                            double v12 = abs(target-func(P12.x,P12.y,P12.z));
+                            double v23 = abs(target-func(P23.x,P23.y,P23.z));
+                            double v03 = abs(target-func(P03.x,P03.y,P03.z));
+                            if(v01<abs(v0) && v01<abs(v1) && v01<0.01)
+                                p01 = true;
+                            if(v12<abs(v1) && v12<abs(v2) && v12<0.01)
+                                p12 = true;
+                            if(v23<abs(v2) && v23<abs(v3) && v23<0.01)
+                                p23 = true;
+                            if(v03<abs(v0) && v03<abs(v3) && v03<0.01)
+                                p03 = true;
+                        }
+                        if(p01 && p12)
+                        {
+                            v1*=-1;
+                        }
+                        if(p01 && p03)
+                        {
+                            v0*=-1;
+                        }
+                        if(p01 && p23)
+                        {
+                            v0*=-1;
+                            v3*=-1;
+                        }
+                        if(p12 && p23)
+                        {
+                            v2*=-1;
+                        }
+                        if(p23 && p03)
+                        {
+                            v3*=-1;
+                        }
+                        if(p12 && p03)
+                        {
+                            v0*=-1;
+                            v1*=-1;
+                        }
+                    }
+                }
+                int nb = squares.size();
+                squares.push_back(new Square);
+                squares[nb]->P = P;
+                squares[nb]->type = ch;
+                squares[nb]->pas = Pi.z;
+                if(ch!=0)
+                {
+                    squares[nb]->courbe = n;
+                    n++;
+                }
+                else
+                    squares[nb]->courbe = -1;
+                marque[k]=squares[nb];
+                if(abs(Pi.z-pas)<min)
+                {
                     pile.push_back({Pi.x-1,Pi.y,Pi.z});
                     pile.push_back({Pi.x+1,Pi.y,Pi.z});
                     pile.push_back({Pi.x,Pi.y-1,Pi.z});
@@ -2697,6 +2754,8 @@ void newMarchingSquare(double target, double pas)
         }
         pile.erase(pile.begin());
     }
+    map<int,int> transfo;
+    vector<int> plop;
 }
 
 double getAngle(Point V0, Point V1)
