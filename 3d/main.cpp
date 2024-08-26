@@ -1144,7 +1144,7 @@ void affichage(void)
     glRotatef(cameraAngleY,0.,1.,0.);
     //affiche_repere();
     dessinZone();
-    /*targets.push_back(0.1);
+    targets.push_back(0.1);
     targets.push_back(0.2);
     targets.push_back(0.3);
     targets.push_back(0.4);
@@ -1152,9 +1152,9 @@ void affichage(void)
     targets.push_back(0.6);
     targets.push_back(0.7);
     targets.push_back(0.8);
-    targets.push_back(0.9);*/
-    targets.push_back(0.5);
-    targets.push_back(0.6);
+    targets.push_back(0.9);
+    /*targets.push_back(0.5);
+    targets.push_back(0.6);*/
     for(int i=0; i<targets.size(); i++)
     {
         
