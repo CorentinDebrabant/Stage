@@ -4,5 +4,5 @@
 
 CC=g++
 main: main.o forme.o config.o
-	$(CC) -o main main.o forme.o config.o  C:\msys64\mingw64\lib\libfreeglut.a C:\Windows\System32\opengl32.dll C:\msys64\mingw64\lib\libglew32.a C:\msys64\mingw64\lib\libglu32.a -larmadillo
+	$(CC) -o main main.o forme.o config.o -lGL -lGLEW -lGLU -lglut  -lm -L/usr/lib/armadillo -llapack -lblas
 all: saisieinteractive
