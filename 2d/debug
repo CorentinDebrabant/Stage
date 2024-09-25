@@ -1,0 +1,879 @@
+Commencement
+Bords de la surface
+	80 points
+Valeurs maximale et minimale de la fonction
+	Maximum = 1 et Minimum = 0.062848
+Recherche des extremums
+	0%
+	10%
+	20%
+	30%
+	30%
+	40%
+	50%
+	60%
+	70%
+	80%
+	90%
+	100%
+Recadrage de la norme des gradient
+Fonction : nouvelleNorme = 0.00282943 * norme + 0.000998585
+Traitement des extremums (suppression des doublons et autres valeurs non conformes)
+Origalement :
+	N° minimums locaux = 4
+	N° maximums locaux = 9
+Finalement :
+	N° minimums locaux = 2
+	N° maximums locaux = 3
+Traitement des extremums (traitement des valeurs des extremums et recherche d'iso-lignes proches)
+Remplissage des valeurs pour les iso-lignes
+	0 (valeur de base)
+	0.0765463 (valeur pour les extremums)
+	0.1 (valeur de base)
+	0.2 (valeur de base)
+	0.283734 (valeur pour les extremums)
+	0.3 (valeur de base)
+	0.4 (valeur de base)
+	0.5 (valeur de base)
+	0.6 (valeur de base)
+	0.7 (valeur de base)
+	0.8 (valeur de base)
+	0.9 (valeur de base)
+	0.994684 (valeur pour les extremums)
+	1 (valeur de base)
+Lancement des courbes de gradient autour des extremums
+	Courbes de gradient pour l'iso-ligne n°0 pour la valeur 0.994684
+		20 courbes lancés
+	Courbes de gradient pour l'iso-ligne n°0 pour la valeur 0.0765463
+		4 courbes lancés
+	Courbes de gradient pour l'iso-ligne n°1 pour la valeur 0.0765463
+		3 courbes lancés
+	Courbes de gradient pour l'iso-ligne n°0 pour la valeur 0.283734
+		2 courbes lancés
+	Courbes de gradient pour l'iso-ligne n°1 pour la valeur 0.283734
+		2 courbes lancés
+Lancement des courbes de gradient le long des bords
+	 Depuis le point 0 du bord : Pas de courbe
+	 Depuis le point 1 du bord : Pas de courbe
+	 Depuis le point 2 du bord : Courbe lancée
+	 Depuis le point 3 du bord : Courbe lancée
+	 Depuis le point 4 du bord : Courbe lancée
+	 Depuis le point 5 du bord : Courbe lancée
+	 Depuis le point 6 du bord : Courbe lancée
+	 Depuis le point 7 du bord : Courbe lancée
+	 Depuis le point 8 du bord : Courbe lancée
+	 Depuis le point 9 du bord : Courbe lancée
+	 Depuis le point 10 du bord : Courbe lancée
+	 Depuis le point 11 du bord : Courbe lancée
+	 Depuis le point 12 du bord : Courbe lancée
+	 Depuis le point 13 du bord : Courbe lancée
+	 Depuis le point 14 du bord : Courbe lancée
+	 Depuis le point 15 du bord : Courbe lancée
+	 Depuis le point 16 du bord : Courbe lancée
+	 Depuis le point 17 du bord : Courbe lancée
+	 Depuis le point 18 du bord : Courbe lancée
+	 Depuis le point 19 du bord : Courbe lancée
+	 Depuis le point 20 du bord : Courbe lancée
+	 Depuis le point 21 du bord : Courbe lancée
+	 Depuis le point 22 du bord : Courbe lancée
+	 Depuis le point 23 du bord : Courbe lancée
+	 Depuis le point 24 du bord : Courbe lancée
+	 Depuis le point 25 du bord : Courbe lancée
+	 Depuis le point 26 du bord : Courbe lancée
+	 Depuis le point 27 du bord : Courbe lancée
+	 Depuis le point 28 du bord : Courbe lancée
+	 Depuis le point 29 du bord : Courbe lancée
+	 Depuis le point 30 du bord : Courbe lancée
+	 Depuis le point 31 du bord : Courbe lancée
+	 Depuis le point 32 du bord : Courbe lancée
+	 Depuis le point 33 du bord : Courbe lancée
+	 Depuis le point 34 du bord : Pas de courbe
+	 Depuis le point 35 du bord : Pas de courbe
+	 Depuis le point 36 du bord : Courbe lancée
+	 Depuis le point 37 du bord : Courbe lancée
+	 Depuis le point 38 du bord : Courbe lancée
+	 Depuis le point 39 du bord : Courbe lancée
+	 Depuis le point 40 du bord : Pas de courbe
+	 Depuis le point 41 du bord : Pas de courbe
+	 Depuis le point 42 du bord : Courbe lancée
+	 Depuis le point 43 du bord : Courbe lancée
+	 Depuis le point 44 du bord : Courbe lancée
+	 Depuis le point 45 du bord : Courbe lancée
+	 Depuis le point 46 du bord : Courbe lancée
+	 Depuis le point 47 du bord : Courbe lancée
+	 Depuis le point 48 du bord : Courbe lancée
+	 Depuis le point 49 du bord : Courbe lancée
+	 Depuis le point 50 du bord : Courbe lancée
+	 Depuis le point 51 du bord : Courbe lancée
+	 Depuis le point 52 du bord : Courbe lancée
+	 Depuis le point 53 du bord : Courbe lancée
+	 Depuis le point 54 du bord : Courbe lancée
+	 Depuis le point 55 du bord : Courbe lancée
+	 Depuis le point 56 du bord : Courbe lancée
+	 Depuis le point 57 du bord : Courbe lancée
+	 Depuis le point 58 du bord : Courbe lancée
+	 Depuis le point 59 du bord : Courbe lancée
+	 Depuis le point 60 du bord : Courbe lancée
+	 Depuis le point 61 du bord : Courbe lancée
+	 Depuis le point 62 du bord : Courbe lancée
+	 Depuis le point 63 du bord : Courbe lancée
+	 Depuis le point 64 du bord : Courbe lancée
+	 Depuis le point 65 du bord : Courbe lancée
+	 Depuis le point 66 du bord : Courbe lancée
+	 Depuis le point 67 du bord : Courbe lancée
+	 Depuis le point 68 du bord : Courbe lancée
+	 Depuis le point 69 du bord : Courbe lancée
+	 Depuis le point 70 du bord : Courbe lancée
+	 Depuis le point 71 du bord : Courbe lancée
+	 Depuis le point 72 du bord : Courbe lancée
+	 Depuis le point 73 du bord : Courbe lancée
+	 Depuis le point 74 du bord : Pas de courbe
+	 Depuis le point 75 du bord : Pas de courbe
+	 Depuis le point 76 du bord : Courbe lancée
+	 Depuis le point 77 du bord : Pas de courbe
+	 Depuis le point 78 du bord : Courbe lancée
+	 Depuis le point 79 du bord : Courbe lancée
+Construction des iso-lignes
+	Le long de la courbe de gradient n°0
+		Ajout de l'iso-ligne n°0 pour la valeur 0.0765463. Nombre de points : 27
+		Ajout de l'iso-ligne n°0 pour la valeur 0.1. Nombre de points : 27
+		Ajout de l'iso-ligne n°0 pour la valeur 0.2. Nombre de points : 26
+		Ajout de l'iso-ligne n°0 pour la valeur 0.283734. Nombre de points : 18
+		Ajout de l'iso-ligne n°0 pour la valeur 0.3. Nombre de points : 19
+		Ajout de l'iso-ligne n°0 pour la valeur 0.4. Nombre de points : 23
+		Ajout de l'iso-ligne n°0 pour la valeur 0.5. Nombre de points : 26
+		Ajout de l'iso-ligne n°0 pour la valeur 0.6. Nombre de points : 29
+		Ajout de l'iso-ligne n°0 pour la valeur 0.7. Nombre de points : 32
+		Ajout de l'iso-ligne n°0 pour la valeur 0.8. Nombre de points : 38
+		Ajout de l'iso-ligne n°0 pour la valeur 0.9. Nombre de points : 78
+		Ajout de l'iso-ligne n°0 pour la valeur 0.994684. Nombre de points : 78
+	Le long de la courbe de gradient n°1
+	Le long de la courbe de gradient n°2
+	Le long de la courbe de gradient n°3
+	Le long de la courbe de gradient n°4
+	Le long de la courbe de gradient n°5
+		Ajout de l'iso-ligne n°1 pour la valeur 0.0765463. Nombre de points : 27
+		Ajout de l'iso-ligne n°1 pour la valeur 0.1. Nombre de points : 27
+		Ajout de l'iso-ligne n°1 pour la valeur 0.2. Nombre de points : 26
+		Ajout de l'iso-ligne n°1 pour la valeur 0.283734. Nombre de points : 18
+		Ajout de l'iso-ligne n°1 pour la valeur 0.3. Nombre de points : 19
+		Ajout de l'iso-ligne n°1 pour la valeur 0.4. Nombre de points : 23
+		Ajout de l'iso-ligne n°1 pour la valeur 0.5. Nombre de points : 26
+		Ajout de l'iso-ligne n°1 pour la valeur 0.6. Nombre de points : 29
+		Ajout de l'iso-ligne n°1 pour la valeur 0.7. Nombre de points : 32
+		Ajout de l'iso-ligne n°1 pour la valeur 0.8. Nombre de points : 38
+	Le long de la courbe de gradient n°6
+	Le long de la courbe de gradient n°7
+	Le long de la courbe de gradient n°8
+	Le long de la courbe de gradient n°9
+	Le long de la courbe de gradient n°10
+	Le long de la courbe de gradient n°11
+	Le long de la courbe de gradient n°12
+	Le long de la courbe de gradient n°13
+	Le long de la courbe de gradient n°14
+	Le long de la courbe de gradient n°15
+	Le long de la courbe de gradient n°16
+	Le long de la courbe de gradient n°17
+	Le long de la courbe de gradient n°18
+	Le long de la courbe de gradient n°19
+	Le long de la courbe de gradient n°20
+	Le long de la courbe de gradient n°21
+	Le long de la courbe de gradient n°22
+	Le long de la courbe de gradient n°23
+	Le long de la courbe de gradient n°24
+	Le long de la courbe de gradient n°25
+	Le long de la courbe de gradient n°26
+	Le long de la courbe de gradient n°27
+		Ajout de l'iso-ligne n°2 pour la valeur 0.283734. Nombre de points : 4
+		Ajout de l'iso-ligne n°2 pour la valeur 0.3. Nombre de points : 3
+	Le long de la courbe de gradient n°28
+	Le long de la courbe de gradient n°29
+		Ajout de l'iso-ligne n°3 pour la valeur 0.283734. Nombre de points : 4
+		Ajout de l'iso-ligne n°3 pour la valeur 0.3. Nombre de points : 3
+	Le long de la courbe de gradient n°30
+	Le long de la courbe de gradient n°31
+	Le long de la courbe de gradient n°32
+	Le long de la courbe de gradient n°33
+	Le long de la courbe de gradient n°34
+	Le long de la courbe de gradient n°35
+	Le long de la courbe de gradient n°36
+	Le long de la courbe de gradient n°37
+	Le long de la courbe de gradient n°38
+	Le long de la courbe de gradient n°39
+	Le long de la courbe de gradient n°40
+	Le long de la courbe de gradient n°41
+	Le long de la courbe de gradient n°42
+	Le long de la courbe de gradient n°43
+	Le long de la courbe de gradient n°44
+	Le long de la courbe de gradient n°45
+	Le long de la courbe de gradient n°46
+	Le long de la courbe de gradient n°47
+	Le long de la courbe de gradient n°48
+	Le long de la courbe de gradient n°49
+	Le long de la courbe de gradient n°50
+	Le long de la courbe de gradient n°51
+	Le long de la courbe de gradient n°52
+	Le long de la courbe de gradient n°53
+	Le long de la courbe de gradient n°54
+	Le long de la courbe de gradient n°55
+	Le long de la courbe de gradient n°56
+	Le long de la courbe de gradient n°57
+	Le long de la courbe de gradient n°58
+	Le long de la courbe de gradient n°59
+	Le long de la courbe de gradient n°60
+	Le long de la courbe de gradient n°61
+	Le long de la courbe de gradient n°62
+	Le long de la courbe de gradient n°63
+	Le long de la courbe de gradient n°64
+	Le long de la courbe de gradient n°65
+	Le long de la courbe de gradient n°66
+	Le long de la courbe de gradient n°67
+	Le long de la courbe de gradient n°68
+	Le long de la courbe de gradient n°69
+	Le long de la courbe de gradient n°70
+	Le long de la courbe de gradient n°71
+	Le long de la courbe de gradient n°72
+	Le long de la courbe de gradient n°73
+	Le long de la courbe de gradient n°74
+	Le long de la courbe de gradient n°75
+	Le long de la courbe de gradient n°76
+	Le long de la courbe de gradient n°77
+	Le long de la courbe de gradient n°78
+	Le long de la courbe de gradient n°79
+	Le long de la courbe de gradient n°80
+	Le long de la courbe de gradient n°81
+	Le long de la courbe de gradient n°82
+	Le long de la courbe de gradient n°83
+	Le long de la courbe de gradient n°84
+	Le long de la courbe de gradient n°85
+	Le long de la courbe de gradient n°86
+	Le long de la courbe de gradient n°87
+	Le long de la courbe de gradient n°88
+	Le long de la courbe de gradient n°89
+	Le long de la courbe de gradient n°90
+	Le long de la courbe de gradient n°91
+	Le long de la courbe de gradient n°92
+	Le long de la courbe de gradient n°93
+	Le long de la courbe de gradient n°94
+	Le long de la courbe de gradient n°95
+	Le long de la courbe de gradient n°96
+	Le long de la courbe de gradient n°97
+	Le long de la courbe de gradient n°98
+	Le long de la courbe de gradient n°99
+	Le long de la courbe de gradient n°100
+	Le long de la courbe de gradient n°101
+Détection des iso-lignes proches
+	Pour les iso-lignes de valeurs 0.0765463 et 0
+	Pour les iso-lignes de valeurs 0.1 et 0.0765463
+	Pour les iso-lignes de valeurs 0.2 et 0.1
+	Pour les iso-lignes de valeurs 0.283734 et 0.2
+	Pour les iso-lignes de valeurs 0.3 et 0.283734
+		Suppression de l'iso-ligne n°0 de valeur 0.283734 à cause de l'iso-ligne n°0 de valeur 0.3
+		Suppression de l'iso-ligne n°1 de valeur 0.283734 à cause de l'iso-ligne n°1 de valeur 0.3
+		Suppression de l'iso-ligne n°2 de valeur 0.3 à cause de l'iso-ligne n°2 de valeur 0.283734
+		Suppression de l'iso-ligne n°3 de valeur 0.3 à cause de l'iso-ligne n°3 de valeur 0.283734
+	Pour les iso-lignes de valeurs 0.4 et 0.3
+	Pour les iso-lignes de valeurs 0.5 et 0.4
+	Pour les iso-lignes de valeurs 0.6 et 0.5
+	Pour les iso-lignes de valeurs 0.7 et 0.6
+	Pour les iso-lignes de valeurs 0.8 et 0.7
+	Pour les iso-lignes de valeurs 0.9 et 0.8
+	Pour les iso-lignes de valeurs 0.994684 et 0.9
+	Pour les iso-lignes de valeurs 1 et 0.994684
+Suppression des points des iso-lignes supprimées dans les courbes de gradient
+Construction des bords
+Identification des points des bords présentant un angle important avec ses voisins
+	4 points trouvés
+Construction de la liste ordonnée des points des courbes de gradient, iso-lignes et ceux de l'étape précédente le long du bord
+	168 points le long du bord
+Fin de la phase de préparation
+Vérification du sens de parcours des iso-lignes
+Vérification du sens de parcours des points sur les bords
+Gestion des courbes de gradients se rejoignant
+Identification des groupes de points le long des bords
+Identification des points le long des bords dont l'ordre est sûr
+Identification des groupes de points sur les iso-lignes
+Identification des pointssur les iso-lignes dont l'ordre est sûr
+Identification de 12 groupes de points et 30 suite de points dont l'ordre est sûr
+Traitement des groupes pour réordonner les points et supprimer des courbes de gradient
+	Groupe n°0 de taille 21 le long du bord
+	Groupe n°1 de taille 19 le long du bord
+	Groupe n°2 de taille 21 sur l'iso-ligne n°0 de valeur 0.0765463
+	Groupe n°3 de taille 19 sur l'iso-ligne n°1 de valeur 0.0765463
+	Groupe n°4 de taille 13 sur l'iso-ligne n°0 de valeur 0.1
+	Groupe n°5 de taille 13 sur l'iso-ligne n°1 de valeur 0.1
+	Groupe n°6 de taille 2 sur l'iso-ligne n°0 de valeur 0.2
+	Groupe n°7 de taille 2 sur l'iso-ligne n°1 de valeur 0.2
+	Groupe n°8 de taille 8 sur l'iso-ligne n°0 de valeur 0.9
+	Groupe n°9 de taille 8 sur l'iso-ligne n°0 de valeur 0.9
+	Groupe n°10 de taille 29 sur l'iso-ligne n°0 de valeur 0.994684
+	Groupe n°11 de taille 29 sur l'iso-ligne n°0 de valeur 0.994684
+Choix des courbes de gradient à garder
+	Courbe de gradient n°85 gardée pour un groupe sur l'iso-ligne n°0 de valeur 0.9
+	Courbe de gradient n°49 gardée pour un groupe sur l'iso-ligne n°0 de valeur 0.9
+	Courbe de gradient n°15 gardée pour un groupe sur l'iso-ligne n°0 de valeur 0.1
+	Courbe de gradient n°5 gardée pour un groupe sur l'iso-ligne n°1 de valeur 0.1
+	Courbe de gradient n°95 gardée pour un groupe sur l'iso-ligne n°0 de valeur 0.994684
+	Courbe de gradient n°59 gardée pour un groupe sur l'iso-ligne n°0 de valeur 0.994684
+Phase de suppression de courbes de gradient et des points affectés
+Construction des cellules
+	Après la première phase : 62 faces crées
+	Après la deuxième phase : 515 faces crées
+	Après la troisième phase : 515 faces crées
+Remplissage de la structure half-edge
+	0/514
+	50/514
+	100/514
+	150/514
+	200/514
+	250/514
+	300/514
+	350/514
+	400/514
+	450/514
+	500/514
+	514/514
+Traitement sur les cellules (Fusion des points et des cellules)
+	Fusion des groupes de points
+		0/514
+		50/514
+		100/514
+		150/514
+		200/514
+		250/514
+		300/514
+		350/514
+		400/514
+		450/514
+		500/514
+		514/514
+	Fusion des cellules de petites tailles
+		0/514
+		50/514
+		100/514
+		150/514
+		200/514
+		250/514
+		300/514
+		350/514
+		400/514
+		450/514
+		500/514
+		514/514
+Affichage des cellules (rouge) et approximation de la densité moyenne
+	0/491
+	50/491
+	100/491
+	150/491
+	200/491
+	250/491
+	300/491
+	350/491
+	400/491
+	450/491
+	491/491
+Deuxième approximation de la densité moyenne des cellules
+	Face n°0 : première approximation = 0.072485 ; deuxième approximation = 0.0731632
+	Face n°1 : première approximation = 0.0720224 ; deuxième approximation = 0.0721711
+	Face n°2 : première approximation = 0.0713017 ; deuxième approximation = 0.0710861
+	Face n°3 : première approximation = 0.0706183 ; deuxième approximation = 0.0697559
+	Face n°4 : première approximation = 0.0712995 ; deuxième approximation = 0.071048
+	Face n°5 : première approximation = 0.0743792 ; deuxième approximation = 0.0740501
+	Face n°6 : première approximation = 0.177546 ; deuxième approximation = 0.178307
+	Face n°7 : première approximation = 0.26588 ; deuxième approximation = 0.267941
+	Face n°8 : première approximation = 0.688754 ; deuxième approximation = 0.6895
+	Face n°9 : première approximation = 0.778269 ; deuxième approximation = 0.780382
+	Face n°10 : première approximation = 0.796077 ; deuxième approximation = 0.795969
+	Face n°11 : première approximation = 0.786562 ; deuxième approximation = 0.795545
+	Face n°12 : première approximation = 0.783251 ; deuxième approximation = 0.784349
+	Face n°13 : première approximation = 0.777974 ; deuxième approximation = 0.77913
+	Face n°14 : première approximation = 0.767255 ; deuxième approximation = 0.768838
+	Face n°15 : première approximation = 0.680615 ; deuxième approximation = 0.681608
+	Face n°16 : première approximation = 0.580925 ; deuxième approximation = 0.58189
+	Face n°17 : première approximation = 0.476163 ; deuxième approximation = 0.479266
+	Face n°18 : première approximation = 0.374335 ; deuxième approximation = 0.379682
+	Face n°19 : première approximation = 0.348397 ; deuxième approximation = 0.357475
+	Face n°20 : première approximation = 0.0726896 ; deuxième approximation = 0.0735859
+	Face n°21 : première approximation = 0.0719573 ; deuxième approximation = 0.0727235
+	Face n°22 : première approximation = 0.0717125 ; deuxième approximation = 0.0722775
+	Face n°23 : première approximation = 0.0712155 ; deuxième approximation = 0.0735575
+	Face n°24 : première approximation = 0.0711889 ; deuxième approximation = 0.0709452
+	Face n°25 : première approximation = 0.0704655 ; deuxième approximation = 0.069739
+	Face n°26 : première approximation = 0.0708339 ; deuxième approximation = 0.0705542
+	Face n°27 : première approximation = 0.0736266 ; deuxième approximation = 0.073211
+	Face n°28 : première approximation = 0.177548 ; deuxième approximation = 0.178308
+	Face n°29 : première approximation = 0.265878 ; deuxième approximation = 0.26794
+	Face n°30 : première approximation = 0.688752 ; deuxième approximation = 0.6895
+	Face n°31 : première approximation = 0.778269 ; deuxième approximation = 0.780382
+	Face n°32 : première approximation = 0.796069 ; deuxième approximation = 0.795936
+	Face n°33 : première approximation = 0.786563 ; deuxième approximation = 0.795545
+	Face n°34 : première approximation = 0.783251 ; deuxième approximation = 0.784349
+	Face n°35 : première approximation = 0.777974 ; deuxième approximation = 0.77913
+	Face n°36 : première approximation = 0.767255 ; deuxième approximation = 0.768838
+	Face n°37 : première approximation = 0.680615 ; deuxième approximation = 0.681608
+	Face n°38 : première approximation = 0.580925 ; deuxième approximation = 0.58189
+	Face n°39 : première approximation = 0.476163 ; deuxième approximation = 0.479266
+	Face n°40 : première approximation = 0.374335 ; deuxième approximation = 0.379682
+	Face n°41 : première approximation = 0.348397 ; deuxième approximation = 0.357475
+	Face n°42 : première approximation = 0.0881505 ; deuxième approximation = 0.0877886
+	Face n°43 : première approximation = 0.0910303 ; deuxième approximation = 0.0900661
+	Face n°44 : première approximation = 0.0908378 ; deuxième approximation = 0.0905388
+	Face n°45 : première approximation = 0.0892271 ; deuxième approximation = 0.0881359
+	Face n°46 : première approximation = 0.0884372 ; deuxième approximation = 0.0876675
+	Face n°47 : première approximation = 0.0880724 ; deuxième approximation = 0.0877027
+	Face n°48 : première approximation = 0.0908197 ; deuxième approximation = 0.0892725
+	Face n°49 : première approximation = 0.0877319 ; deuxième approximation = 0.0875023
+	Face n°50 : première approximation = 0.0886199 ; deuxième approximation = 0.0885575
+	Face n°51 : première approximation = 0.0908355 ; deuxième approximation = 0.0904107
+	Face n°52 : première approximation = 0.090391 ; deuxième approximation = 0.0910622
+	Face n°53 : première approximation = 0.0889201 ; deuxième approximation = 0.0894738
+	Face n°54 : première approximation = 0.0890165 ; deuxième approximation = 0.0879927
+	Face n°55 : première approximation = 0.0883271 ; deuxième approximation = 0.0876351
+	Face n°56 : première approximation = 0.0880674 ; deuxième approximation = 0.0876838
+	Face n°57 : première approximation = 0.0906417 ; deuxième approximation = 0.0890374
+	Face n°58 : première approximation = 0.12219 ; deuxième approximation = 0.115773
+	Face n°59 : première approximation = 0.13646 ; deuxième approximation = 0.132368
+	Face n°60 : première approximation = 0.143962 ; deuxième approximation = 0.145567
+	Face n°61 : première approximation = 0.145905 ; deuxième approximation = 0.147302
+	Face n°62 : première approximation = 0.145007 ; deuxième approximation = 0.150887
+	Face n°63 : première approximation = 0.150422 ; deuxième approximation = 0.155153
+	Face n°64 : première approximation = 0.16392 ; deuxième approximation = 0.16573
+	Face n°65 : première approximation = 0.15949 ; deuxième approximation = 0.15863
+	Face n°66 : première approximation = 0.143303 ; deuxième approximation = 0.148387
+	Face n°67 : première approximation = 0.142887 ; deuxième approximation = 0.145395
+	Face n°68 : première approximation = 0.142409 ; deuxième approximation = 0.144385
+	Face n°69 : première approximation = 0.14472 ; deuxième approximation = 0.144608
+	Face n°70 : première approximation = 0.144892 ; deuxième approximation = 0.14538
+	Face n°71 : première approximation = 0.144042 ; deuxième approximation = 0.145896
+	Face n°72 : première approximation = 0.145158 ; deuxième approximation = 0.146281
+	Face n°73 : première approximation = 0.15204 ; deuxième approximation = 0.152942
+	Face n°74 : première approximation = 0.112565 ; deuxième approximation = 0.108346
+	Face n°75 : première approximation = 0.135408 ; deuxième approximation = 0.12781
+	Face n°76 : première approximation = 0.143963 ; deuxième approximation = 0.145567
+	Face n°77 : première approximation = 0.146468 ; deuxième approximation = 0.147481
+	Face n°78 : première approximation = 0.145075 ; deuxième approximation = 0.151568
+	Face n°79 : première approximation = 0.149914 ; deuxième approximation = 0.155531
+	Face n°80 : première approximation = 0.164204 ; deuxième approximation = 0.165753
+	Face n°81 : première approximation = 0.159458 ; deuxième approximation = 0.157888
+	Face n°82 : première approximation = 0.143148 ; deuxième approximation = 0.147475
+	Face n°83 : première approximation = 0.142823 ; deuxième approximation = 0.144958
+	Face n°84 : première approximation = 0.142414 ; deuxième approximation = 0.14434
+	Face n°85 : première approximation = 0.14446 ; deuxième approximation = 0.144665
+	Face n°86 : première approximation = 0.144401 ; deuxième approximation = 0.145353
+	Face n°87 : première approximation = 0.143926 ; deuxième approximation = 0.145825
+	Face n°88 : première approximation = 0.145447 ; deuxième approximation = 0.146257
+	Face n°89 : première approximation = 0.152039 ; deuxième approximation = 0.152942
+	Face n°90 : première approximation = 0.221344 ; deuxième approximation = 0.216843
+	Face n°91 : première approximation = 0.239142 ; deuxième approximation = 0.239492
+	Face n°92 : première approximation = 0.240655 ; deuxième approximation = 0.241143
+	Face n°93 : première approximation = 0.236985 ; deuxième approximation = 0.23649
+	Face n°94 : première approximation = 0.224634 ; deuxième approximation = 0.223368
+	Face n°95 : première approximation = 0.217666 ; deuxième approximation = 0.216667
+	Face n°96 : première approximation = 0.216971 ; deuxième approximation = 0.215728
+	Face n°97 : première approximation = 0.223231 ; deuxième approximation = 0.222094
+	Face n°98 : première approximation = 0.234149 ; deuxième approximation = 0.236338
+	Face n°99 : première approximation = 0.261481 ; deuxième approximation = 0.255368
+	Face n°100 : première approximation = 0.244755 ; deuxième approximation = 0.246097
+	Face n°101 : première approximation = 0.244636 ; deuxième approximation = 0.24611
+	Face n°102 : première approximation = 0.244746 ; deuxième approximation = 0.246364
+	Face n°103 : première approximation = 0.2448 ; deuxième approximation = 0.246655
+	Face n°104 : première approximation = 0.245183 ; deuxième approximation = 0.246908
+	Face n°105 : première approximation = 0.245382 ; deuxième approximation = 0.247157
+	Face n°106 : première approximation = 0.245606 ; deuxième approximation = 0.247362
+	Face n°107 : première approximation = 0.245918 ; deuxième approximation = 0.247569
+	Face n°108 : première approximation = 0.245984 ; deuxième approximation = 0.247742
+	Face n°109 : première approximation = 0.24733 ; deuxième approximation = 0.247959
+	Face n°110 : première approximation = 0.247464 ; deuxième approximation = 0.248188
+	Face n°111 : première approximation = 0.246935 ; deuxième approximation = 0.248309
+	Face n°112 : première approximation = 0.247552 ; deuxième approximation = 0.248447
+	Face n°113 : première approximation = 0.247805 ; deuxième approximation = 0.248569
+	Face n°114 : première approximation = 0.24865 ; deuxième approximation = 0.248802
+	Face n°115 : première approximation = 0.221343 ; deuxième approximation = 0.216843
+	Face n°116 : première approximation = 0.239358 ; deuxième approximation = 0.239719
+	Face n°117 : première approximation = 0.240635 ; deuxième approximation = 0.241109
+	Face n°118 : première approximation = 0.236699 ; deuxième approximation = 0.236017
+	Face n°119 : première approximation = 0.224634 ; deuxième approximation = 0.223368
+	Face n°120 : première approximation = 0.217666 ; deuxième approximation = 0.216667
+	Face n°121 : première approximation = 0.216971 ; deuxième approximation = 0.215728
+	Face n°122 : première approximation = 0.223231 ; deuxième approximation = 0.222094
+	Face n°123 : première approximation = 0.234149 ; deuxième approximation = 0.236338
+	Face n°124 : première approximation = 0.261662 ; deuxième approximation = 0.255171
+	Face n°125 : première approximation = 0.244751 ; deuxième approximation = 0.246062
+	Face n°126 : première approximation = 0.244674 ; deuxième approximation = 0.246158
+	Face n°127 : première approximation = 0.244801 ; deuxième approximation = 0.246437
+	Face n°128 : première approximation = 0.244876 ; deuxième approximation = 0.246716
+	Face n°129 : première approximation = 0.245243 ; deuxième approximation = 0.246975
+	Face n°130 : première approximation = 0.245439 ; deuxième approximation = 0.247217
+	Face n°131 : première approximation = 0.245675 ; deuxième approximation = 0.247415
+	Face n°132 : première approximation = 0.245991 ; deuxième approximation = 0.247617
+	Face n°133 : première approximation = 0.246028 ; deuxième approximation = 0.247771
+	Face n°134 : première approximation = 0.247213 ; deuxième approximation = 0.247981
+	Face n°135 : première approximation = 0.247193 ; deuxième approximation = 0.248172
+	Face n°136 : première approximation = 0.246874 ; deuxième approximation = 0.248294
+	Face n°137 : première approximation = 0.24772 ; deuxième approximation = 0.248429
+	Face n°138 : première approximation = 0.247805 ; deuxième approximation = 0.248568
+	Face n°139 : première approximation = 0.248649 ; deuxième approximation = 0.248802
+	Face n°140 : première approximation = 0.29919 ; deuxième approximation = 0.299876
+	Face n°141 : première approximation = 0.296162 ; deuxième approximation = 0.29534
+	Face n°142 : première approximation = 0.28712 ; deuxième approximation = 0.287564
+	Face n°143 : première approximation = 0.298535 ; deuxième approximation = 0.29935
+	Face n°144 : première approximation = 0.291439 ; deuxième approximation = 0.292463
+	Face n°145 : première approximation = 0.351643 ; deuxième approximation = 0.348395
+	Face n°146 : première approximation = 0.346751 ; deuxième approximation = 0.347961
+	Face n°147 : première approximation = 0.346872 ; deuxième approximation = 0.348137
+	Face n°148 : première approximation = 0.34701 ; deuxième approximation = 0.348294
+	Face n°149 : première approximation = 0.347068 ; deuxième approximation = 0.348402
+	Face n°150 : première approximation = 0.347305 ; deuxième approximation = 0.34852
+	Face n°151 : première approximation = 0.347426 ; deuxième approximation = 0.348625
+	Face n°152 : première approximation = 0.347558 ; deuxième approximation = 0.34873
+	Face n°153 : première approximation = 0.347744 ; deuxième approximation = 0.348805
+	Face n°154 : première approximation = 0.347783 ; deuxième approximation = 0.348898
+	Face n°155 : première approximation = 0.348568 ; deuxième approximation = 0.348987
+	Face n°156 : première approximation = 0.348655 ; deuxième approximation = 0.349119
+	Face n°157 : première approximation = 0.348369 ; deuxième approximation = 0.349169
+	Face n°158 : première approximation = 0.34873 ; deuxième approximation = 0.349262
+	Face n°159 : première approximation = 0.348888 ; deuxième approximation = 0.349315
+	Face n°160 : première approximation = 0.348938 ; deuxième approximation = 0.349449
+	Face n°161 : première approximation = 0.349005 ; deuxième approximation = 0.349582
+	Face n°162 : première approximation = 0.363174 ; deuxième approximation = 0.363466
+	Face n°163 : première approximation = 0.351813 ; deuxième approximation = 0.34851
+	Face n°164 : première approximation = 0.346804 ; deuxième approximation = 0.347993
+	Face n°165 : première approximation = 0.346918 ; deuxième approximation = 0.348172
+	Face n°166 : première approximation = 0.347051 ; deuxième approximation = 0.348321
+	Face n°167 : première approximation = 0.347116 ; deuxième approximation = 0.348437
+	Face n°168 : première approximation = 0.347342 ; deuxième approximation = 0.348549
+	Face n°169 : première approximation = 0.34746 ; deuxième approximation = 0.348642
+	Face n°170 : première approximation = 0.347599 ; deuxième approximation = 0.348751
+	Face n°171 : première approximation = 0.347788 ; deuxième approximation = 0.348843
+	Face n°172 : première approximation = 0.347809 ; deuxième approximation = 0.348904
+	Face n°173 : première approximation = 0.348503 ; deuxième approximation = 0.349003
+	Face n°174 : première approximation = 0.348503 ; deuxième approximation = 0.349092
+	Face n°175 : première approximation = 0.348332 ; deuxième approximation = 0.349149
+	Face n°176 : première approximation = 0.348821 ; deuxième approximation = 0.349243
+	Face n°177 : première approximation = 0.348888 ; deuxième approximation = 0.349315
+	Face n°178 : première approximation = 0.348938 ; deuxième approximation = 0.349449
+	Face n°179 : première approximation = 0.349005 ; deuxième approximation = 0.349582
+	Face n°180 : première approximation = 0.363174 ; deuxième approximation = 0.363466
+	Face n°181 : première approximation = 0.447101 ; deuxième approximation = 0.453868
+	Face n°182 : première approximation = 0.446481 ; deuxième approximation = 0.447416
+	Face n°183 : première approximation = 0.446303 ; deuxième approximation = 0.44763
+	Face n°184 : première approximation = 0.449675 ; deuxième approximation = 0.448703
+	Face n°185 : première approximation = 0.448233 ; deuxième approximation = 0.449041
+	Face n°186 : première approximation = 0.44832 ; deuxième approximation = 0.449172
+	Face n°187 : première approximation = 0.448414 ; deuxième approximation = 0.44933
+	Face n°188 : première approximation = 0.448464 ; deuxième approximation = 0.449317
+	Face n°189 : première approximation = 0.448611 ; deuxième approximation = 0.449318
+	Face n°190 : première approximation = 0.448695 ; deuxième approximation = 0.449404
+	Face n°191 : première approximation = 0.448786 ; deuxième approximation = 0.449532
+	Face n°192 : première approximation = 0.448903 ; deuxième approximation = 0.449596
+	Face n°193 : première approximation = 0.448948 ; deuxième approximation = 0.449632
+	Face n°194 : première approximation = 0.449347 ; deuxième approximation = 0.449535
+	Face n°195 : première approximation = 0.449428 ; deuxième approximation = 0.449742
+	Face n°196 : première approximation = 0.449351 ; deuxième approximation = 0.449541
+	Face n°197 : première approximation = 0.449531 ; deuxième approximation = 0.449587
+	Face n°198 : première approximation = 0.449635 ; deuxième approximation = 0.449562
+	Face n°199 : première approximation = 0.449703 ; deuxième approximation = 0.449796
+	Face n°200 : première approximation = 0.449776 ; deuxième approximation = 0.449748
+	Face n°201 : première approximation = 0.449852 ; deuxième approximation = 0.449694
+	Face n°202 : première approximation = 0.463538 ; deuxième approximation = 0.462901
+	Face n°203 : première approximation = 0.447101 ; deuxième approximation = 0.453868
+	Face n°204 : première approximation = 0.446481 ; deuxième approximation = 0.447416
+	Face n°205 : première approximation = 0.446303 ; deuxième approximation = 0.44763
+	Face n°206 : première approximation = 0.449729 ; deuxième approximation = 0.448678
+	Face n°207 : première approximation = 0.448266 ; deuxième approximation = 0.44911
+	Face n°208 : première approximation = 0.448349 ; deuxième approximation = 0.449182
+	Face n°209 : première approximation = 0.448442 ; deuxième approximation = 0.449363
+	Face n°210 : première approximation = 0.448495 ; deuxième approximation = 0.449423
+	Face n°211 : première approximation = 0.448635 ; deuxième approximation = 0.449355
+	Face n°212 : première approximation = 0.448718 ; deuxième approximation = 0.449452
+	Face n°213 : première approximation = 0.448812 ; deuxième approximation = 0.449467
+	Face n°214 : première approximation = 0.448931 ; deuxième approximation = 0.449508
+	Face n°215 : première approximation = 0.448967 ; deuxième approximation = 0.44962
+	Face n°216 : première approximation = 0.449323 ; deuxième approximation = 0.449706
+	Face n°217 : première approximation = 0.449363 ; deuxième approximation = 0.449574
+	Face n°218 : première approximation = 0.449328 ; deuxième approximation = 0.449532
+	Face n°219 : première approximation = 0.449562 ; deuxième approximation = 0.449593
+	Face n°220 : première approximation = 0.449635 ; deuxième approximation = 0.449562
+	Face n°221 : première approximation = 0.449703 ; deuxième approximation = 0.449795
+	Face n°222 : première approximation = 0.449776 ; deuxième approximation = 0.449747
+	Face n°223 : première approximation = 0.449852 ; deuxième approximation = 0.449694
+	Face n°224 : première approximation = 0.463532 ; deuxième approximation = 0.46289
+	Face n°225 : première approximation = 0.552663 ; deuxième approximation = 0.557298
+	Face n°226 : première approximation = 0.547952 ; deuxième approximation = 0.548528
+	Face n°227 : première approximation = 0.548123 ; deuxième approximation = 0.548732
+	Face n°228 : première approximation = 0.548224 ; deuxième approximation = 0.548902
+	Face n°229 : première approximation = 0.548189 ; deuxième approximation = 0.549105
+	Face n°230 : première approximation = 0.549338 ; deuxième approximation = 0.549252
+	Face n°231 : première approximation = 0.549321 ; deuxième approximation = 0.549587
+	Face n°232 : première approximation = 0.549398 ; deuxième approximation = 0.549824
+	Face n°233 : première approximation = 0.549475 ; deuxième approximation = 0.549704
+	Face n°234 : première approximation = 0.549536 ; deuxième approximation = 0.549737
+	Face n°235 : première approximation = 0.54962 ; deuxième approximation = 0.5497
+	Face n°236 : première approximation = 0.54969 ; deuxième approximation = 0.549806
+	Face n°237 : première approximation = 0.549759 ; deuxième approximation = 0.54993
+	Face n°238 : première approximation = 0.549832 ; deuxième approximation = 0.549783
+	Face n°239 : première approximation = 0.549895 ; deuxième approximation = 0.549984
+	Face n°240 : première approximation = 0.549978 ; deuxième approximation = 0.550156
+	Face n°241 : première approximation = 0.55007 ; deuxième approximation = 0.550154
+	Face n°242 : première approximation = 0.550192 ; deuxième approximation = 0.550351
+	Face n°243 : première approximation = 0.550223 ; deuxième approximation = 0.550207
+	Face n°244 : première approximation = 0.550292 ; deuxième approximation = 0.550245
+	Face n°245 : première approximation = 0.55039 ; deuxième approximation = 0.55042
+	Face n°246 : première approximation = 0.550483 ; deuxième approximation = 0.55042
+	Face n°247 : première approximation = 0.550573 ; deuxième approximation = 0.550539
+	Face n°248 : première approximation = 0.550663 ; deuxième approximation = 0.550368
+	Face n°249 : première approximation = 0.564312 ; deuxième approximation = 0.563373
+	Face n°250 : première approximation = 0.552663 ; deuxième approximation = 0.557298
+	Face n°251 : première approximation = 0.547952 ; deuxième approximation = 0.548528
+	Face n°252 : première approximation = 0.548123 ; deuxième approximation = 0.548732
+	Face n°253 : première approximation = 0.548224 ; deuxième approximation = 0.548902
+	Face n°254 : première approximation = 0.548189 ; deuxième approximation = 0.549105
+	Face n°255 : première approximation = 0.549336 ; deuxième approximation = 0.549227
+	Face n°256 : première approximation = 0.549342 ; deuxième approximation = 0.549697
+	Face n°257 : première approximation = 0.549418 ; deuxième approximation = 0.549547
+	Face n°258 : première approximation = 0.549494 ; deuxième approximation = 0.549694
+	Face n°259 : première approximation = 0.549556 ; deuxième approximation = 0.549637
+	Face n°260 : première approximation = 0.549639 ; deuxième approximation = 0.549941
+	Face n°261 : première approximation = 0.549708 ; deuxième approximation = 0.550015
+	Face n°262 : première approximation = 0.549778 ; deuxième approximation = 0.549724
+	Face n°263 : première approximation = 0.54985 ; deuxième approximation = 0.549944
+	Face n°264 : première approximation = 0.549913 ; deuxième approximation = 0.549941
+	Face n°265 : première approximation = 0.549989 ; deuxième approximation = 0.550178
+	Face n°266 : première approximation = 0.55008 ; deuxième approximation = 0.550169
+	Face n°267 : première approximation = 0.550182 ; deuxième approximation = 0.550313
+	Face n°268 : première approximation = 0.550198 ; deuxième approximation = 0.550223
+	Face n°269 : première approximation = 0.550292 ; deuxième approximation = 0.550245
+	Face n°270 : première approximation = 0.55039 ; deuxième approximation = 0.55042
+	Face n°271 : première approximation = 0.550483 ; deuxième approximation = 0.55042
+	Face n°272 : première approximation = 0.550573 ; deuxième approximation = 0.550539
+	Face n°273 : première approximation = 0.550663 ; deuxième approximation = 0.550368
+	Face n°274 : première approximation = 0.564301 ; deuxième approximation = 0.563369
+	Face n°275 : première approximation = 0.657577 ; deuxième approximation = 0.660317
+	Face n°276 : première approximation = 0.649117 ; deuxième approximation = 0.649319
+	Face n°277 : première approximation = 0.649343 ; deuxième approximation = 0.649522
+	Face n°278 : première approximation = 0.649478 ; deuxième approximation = 0.649622
+	Face n°279 : première approximation = 0.649598 ; deuxième approximation = 0.649699
+	Face n°280 : première approximation = 0.649705 ; deuxième approximation = 0.64979
+	Face n°281 : première approximation = 0.649802 ; deuxième approximation = 0.64983
+	Face n°282 : première approximation = 0.649274 ; deuxième approximation = 0.649782
+	Face n°283 : première approximation = 0.650327 ; deuxième approximation = 0.650171
+	Face n°284 : première approximation = 0.650408 ; deuxième approximation = 0.650207
+	Face n°285 : première approximation = 0.65048 ; deuxième approximation = 0.650242
+	Face n°286 : première approximation = 0.650564 ; deuxième approximation = 0.650282
+	Face n°287 : première approximation = 0.6506 ; deuxième approximation = 0.650293
+	Face n°288 : première approximation = 0.650666 ; deuxième approximation = 0.650301
+	Face n°289 : première approximation = 0.650724 ; deuxième approximation = 0.650343
+	Face n°290 : première approximation = 0.650763 ; deuxième approximation = 0.650361
+	Face n°291 : première approximation = 0.650855 ; deuxième approximation = 0.650391
+	Face n°292 : première approximation = 0.650632 ; deuxième approximation = 0.650432
+	Face n°293 : première approximation = 0.65075 ; deuxième approximation = 0.650468
+	Face n°294 : première approximation = 0.651093 ; deuxième approximation = 0.650566
+	Face n°295 : première approximation = 0.650979 ; deuxième approximation = 0.650442
+	Face n°296 : première approximation = 0.651026 ; deuxième approximation = 0.650572
+	Face n°297 : première approximation = 0.651172 ; deuxième approximation = 0.650703
+	Face n°298 : première approximation = 0.651301 ; deuxième approximation = 0.650743
+	Face n°299 : première approximation = 0.651423 ; deuxième approximation = 0.650838
+	Face n°300 : première approximation = 0.651544 ; deuxième approximation = 0.650923
+	Face n°301 : première approximation = 0.651665 ; deuxième approximation = 0.65101
+	Face n°302 : première approximation = 0.660301 ; deuxième approximation = 0.661271
+	Face n°303 : première approximation = 0.657581 ; deuxième approximation = 0.660319
+	Face n°304 : première approximation = 0.649117 ; deuxième approximation = 0.649319
+	Face n°305 : première approximation = 0.649343 ; deuxième approximation = 0.649522
+	Face n°306 : première approximation = 0.649478 ; deuxième approximation = 0.649622
+	Face n°307 : première approximation = 0.649598 ; deuxième approximation = 0.649699
+	Face n°308 : première approximation = 0.649705 ; deuxième approximation = 0.64979
+	Face n°309 : première approximation = 0.649802 ; deuxième approximation = 0.64983
+	Face n°310 : première approximation = 0.649237 ; deuxième approximation = 0.649766
+	Face n°311 : première approximation = 0.65034 ; deuxième approximation = 0.650171
+	Face n°312 : première approximation = 0.650423 ; deuxième approximation = 0.650212
+	Face n°313 : première approximation = 0.650495 ; deuxième approximation = 0.650247
+	Face n°314 : première approximation = 0.650577 ; deuxième approximation = 0.650271
+	Face n°315 : première approximation = 0.650615 ; deuxième approximation = 0.650293
+	Face n°316 : première approximation = 0.650681 ; deuxième approximation = 0.65033
+	Face n°317 : première approximation = 0.650737 ; deuxième approximation = 0.650361
+	Face n°318 : première approximation = 0.650773 ; deuxième approximation = 0.650406
+	Face n°319 : première approximation = 0.650873 ; deuxième approximation = 0.650414
+	Face n°320 : première approximation = 0.65068 ; deuxième approximation = 0.65044
+	Face n°321 : première approximation = 0.650837 ; deuxième approximation = 0.650454
+	Face n°322 : première approximation = 0.651093 ; deuxième approximation = 0.650554
+	Face n°323 : première approximation = 0.650895 ; deuxième approximation = 0.650504
+	Face n°324 : première approximation = 0.651026 ; deuxième approximation = 0.650573
+	Face n°325 : première approximation = 0.651172 ; deuxième approximation = 0.650703
+	Face n°326 : première approximation = 0.651301 ; deuxième approximation = 0.650743
+	Face n°327 : première approximation = 0.651423 ; deuxième approximation = 0.650838
+	Face n°328 : première approximation = 0.651544 ; deuxième approximation = 0.650923
+	Face n°329 : première approximation = 0.651665 ; deuxième approximation = 0.65101
+	Face n°330 : première approximation = 0.660301 ; deuxième approximation = 0.661271
+	Face n°331 : première approximation = 0.751772 ; deuxième approximation = 0.753833
+	Face n°332 : première approximation = 0.75094 ; deuxième approximation = 0.750794
+	Face n°333 : première approximation = 0.750968 ; deuxième approximation = 0.750759
+	Face n°334 : première approximation = 0.751011 ; deuxième approximation = 0.750731
+	Face n°335 : première approximation = 0.751066 ; deuxième approximation = 0.75071
+	Face n°336 : première approximation = 0.751134 ; deuxième approximation = 0.750715
+	Face n°337 : première approximation = 0.751221 ; deuxième approximation = 0.750736
+	Face n°338 : première approximation = 0.751348 ; deuxième approximation = 0.750714
+	Face n°339 : première approximation = 0.751598 ; deuxième approximation = 0.750727
+	Face n°340 : première approximation = 0.749405 ; deuxième approximation = 0.750454
+	Face n°341 : première approximation = 0.751533 ; deuxième approximation = 0.750837
+	Face n°342 : première approximation = 0.751628 ; deuxième approximation = 0.750853
+	Face n°343 : première approximation = 0.751703 ; deuxième approximation = 0.750871
+	Face n°344 : première approximation = 0.75182 ; deuxième approximation = 0.750903
+	Face n°345 : première approximation = 0.751809 ; deuxième approximation = 0.750929
+	Face n°346 : première approximation = 0.75188 ; deuxième approximation = 0.75093
+	Face n°347 : première approximation = 0.751936 ; deuxième approximation = 0.750943
+	Face n°348 : première approximation = 0.751945 ; deuxième approximation = 0.750983
+	Face n°349 : première approximation = 0.752081 ; deuxième approximation = 0.751019
+	Face n°350 : première approximation = 0.751509 ; deuxième approximation = 0.75106
+	Face n°351 : première approximation = 0.751678 ; deuxième approximation = 0.751084
+	Face n°352 : première approximation = 0.752306 ; deuxième approximation = 0.751096
+	Face n°353 : première approximation = 0.752031 ; deuxième approximation = 0.751209
+	Face n°354 : première approximation = 0.752071 ; deuxième approximation = 0.751355
+	Face n°355 : première approximation = 0.752301 ; deuxième approximation = 0.751451
+	Face n°356 : première approximation = 0.752502 ; deuxième approximation = 0.751565
+	Face n°357 : première approximation = 0.752694 ; deuxième approximation = 0.751691
+	Face n°358 : première approximation = 0.752887 ; deuxième approximation = 0.751849
+	Face n°359 : première approximation = 0.753084 ; deuxième approximation = 0.752025
+	Face n°360 : première approximation = 0.753284 ; deuxième approximation = 0.75224
+	Face n°361 : première approximation = 0.757374 ; deuxième approximation = 0.756812
+	Face n°362 : première approximation = 0.751772 ; deuxième approximation = 0.753833
+	Face n°363 : première approximation = 0.75094 ; deuxième approximation = 0.750794
+	Face n°364 : première approximation = 0.750968 ; deuxième approximation = 0.750759
+	Face n°365 : première approximation = 0.751011 ; deuxième approximation = 0.750731
+	Face n°366 : première approximation = 0.751066 ; deuxième approximation = 0.75071
+	Face n°367 : première approximation = 0.751134 ; deuxième approximation = 0.750715
+	Face n°368 : première approximation = 0.751221 ; deuxième approximation = 0.750736
+	Face n°369 : première approximation = 0.751348 ; deuxième approximation = 0.750714
+	Face n°370 : première approximation = 0.751598 ; deuxième approximation = 0.750727
+	Face n°371 : première approximation = 0.749338 ; deuxième approximation = 0.750434
+	Face n°372 : première approximation = 0.75154 ; deuxième approximation = 0.750839
+	Face n°373 : première approximation = 0.751638 ; deuxième approximation = 0.750852
+	Face n°374 : première approximation = 0.751715 ; deuxième approximation = 0.750875
+	Face n°375 : première approximation = 0.751828 ; deuxième approximation = 0.750902
+	Face n°376 : première approximation = 0.751823 ; deuxième approximation = 0.750934
+	Face n°377 : première approximation = 0.751895 ; deuxième approximation = 0.750945
+	Face n°378 : première approximation = 0.751944 ; deuxième approximation = 0.750943
+	Face n°379 : première approximation = 0.75195 ; deuxième approximation = 0.75098
+	Face n°380 : première approximation = 0.752103 ; deuxième approximation = 0.751019
+	Face n°381 : première approximation = 0.751605 ; deuxième approximation = 0.751065
+	Face n°382 : première approximation = 0.751859 ; deuxième approximation = 0.751066
+	Face n°383 : première approximation = 0.752314 ; deuxième approximation = 0.75116
+	Face n°384 : première approximation = 0.751871 ; deuxième approximation = 0.751258
+	Face n°385 : première approximation = 0.752071 ; deuxième approximation = 0.751355
+	Face n°386 : première approximation = 0.752301 ; deuxième approximation = 0.751451
+	Face n°387 : première approximation = 0.752502 ; deuxième approximation = 0.751565
+	Face n°388 : première approximation = 0.752694 ; deuxième approximation = 0.751691
+	Face n°389 : première approximation = 0.752887 ; deuxième approximation = 0.751849
+	Face n°390 : première approximation = 0.753084 ; deuxième approximation = 0.752025
+	Face n°391 : première approximation = 0.753284 ; deuxième approximation = 0.75224
+	Face n°392 : première approximation = 0.757373 ; deuxième approximation = 0.756809
+	Face n°393 : première approximation = 0.840723 ; deuxième approximation = 0.844398
+	Face n°394 : première approximation = 0.840301 ; deuxième approximation = 0.83858
+	Face n°395 : première approximation = 0.85176 ; deuxième approximation = 0.848002
+	Face n°396 : première approximation = 0.853419 ; deuxième approximation = 0.852742
+	Face n°397 : première approximation = 0.854178 ; deuxième approximation = 0.854002
+	Face n°398 : première approximation = 0.854219 ; deuxième approximation = 0.853799
+	Face n°399 : première approximation = 0.854115 ; deuxième approximation = 0.85343
+	Face n°400 : première approximation = 0.85403 ; deuxième approximation = 0.85313
+	Face n°401 : première approximation = 0.854014 ; deuxième approximation = 0.852888
+	Face n°402 : première approximation = 0.85412 ; deuxième approximation = 0.852726
+	Face n°403 : première approximation = 0.854531 ; deuxième approximation = 0.852591
+	Face n°404 : première approximation = 0.849918 ; deuxième approximation = 0.851919
+	Face n°405 : première approximation = 0.853528 ; deuxième approximation = 0.852144
+	Face n°406 : première approximation = 0.853636 ; deuxième approximation = 0.85214
+	Face n°407 : première approximation = 0.853716 ; deuxième approximation = 0.852144
+	Face n°408 : première approximation = 0.853879 ; deuxième approximation = 0.852133
+	Face n°409 : première approximation = 0.853811 ; deuxième approximation = 0.852161
+	Face n°410 : première approximation = 0.853896 ; deuxième approximation = 0.852181
+	Face n°411 : première approximation = 0.853957 ; deuxième approximation = 0.852203
+	Face n°412 : première approximation = 0.85394 ; deuxième approximation = 0.852261
+	Face n°413 : première approximation = 0.854149 ; deuxième approximation = 0.852272
+	Face n°414 : première approximation = 0.853105 ; deuxième approximation = 0.852357
+	Face n°415 : première approximation = 0.853387 ; deuxième approximation = 0.852503
+	Face n°416 : première approximation = 0.854472 ; deuxième approximation = 0.852666
+	Face n°417 : première approximation = 0.854009 ; deuxième approximation = 0.852824
+	Face n°418 : première approximation = 0.854098 ; deuxième approximation = 0.853077
+	Face n°419 : première approximation = 0.854536 ; deuxième approximation = 0.853376
+	Face n°420 : première approximation = 0.854939 ; deuxième approximation = 0.85374
+	Face n°421 : première approximation = 0.855343 ; deuxième approximation = 0.854192
+	Face n°422 : première approximation = 0.855751 ; deuxième approximation = 0.854723
+	Face n°423 : première approximation = 0.85611 ; deuxième approximation = 0.85535
+	Face n°424 : première approximation = 0.856148 ; deuxième approximation = 0.855619
+	Face n°425 : première approximation = 0.855097 ; deuxième approximation = 0.853681
+	Face n°426 : première approximation = 0.853131 ; deuxième approximation = 0.848021
+	Face n°427 : première approximation = 0.840724 ; deuxième approximation = 0.844389
+	Face n°428 : première approximation = 0.840724 ; deuxième approximation = 0.844389
+	Face n°429 : première approximation = 0.840301 ; deuxième approximation = 0.83858
+	Face n°430 : première approximation = 0.85176 ; deuxième approximation = 0.848002
+	Face n°431 : première approximation = 0.853419 ; deuxième approximation = 0.852742
+	Face n°432 : première approximation = 0.854178 ; deuxième approximation = 0.854002
+	Face n°433 : première approximation = 0.854219 ; deuxième approximation = 0.853799
+	Face n°434 : première approximation = 0.854115 ; deuxième approximation = 0.85343
+	Face n°435 : première approximation = 0.85403 ; deuxième approximation = 0.85313
+	Face n°436 : première approximation = 0.854014 ; deuxième approximation = 0.852888
+	Face n°437 : première approximation = 0.85412 ; deuxième approximation = 0.852726
+	Face n°438 : première approximation = 0.854531 ; deuxième approximation = 0.852591
+	Face n°439 : première approximation = 0.849815 ; deuxième approximation = 0.851881
+	Face n°440 : première approximation = 0.853524 ; deuxième approximation = 0.852134
+	Face n°441 : première approximation = 0.85364 ; deuxième approximation = 0.852132
+	Face n°442 : première approximation = 0.853723 ; deuxième approximation = 0.852137
+	Face n°443 : première approximation = 0.85388 ; deuxième approximation = 0.85215
+	Face n°444 : première approximation = 0.853824 ; deuxième approximation = 0.852151
+	Face n°445 : première approximation = 0.853912 ; deuxième approximation = 0.852192
+	Face n°446 : première approximation = 0.853963 ; deuxième approximation = 0.852215
+	Face n°447 : première approximation = 0.853941 ; deuxième approximation = 0.85227
+	Face n°448 : première approximation = 0.854181 ; deuxième approximation = 0.852321
+	Face n°449 : première approximation = 0.853276 ; deuxième approximation = 0.852358
+	Face n°450 : première approximation = 0.853708 ; deuxième approximation = 0.852464
+	Face n°451 : première approximation = 0.854485 ; deuxième approximation = 0.852677
+	Face n°452 : première approximation = 0.853728 ; deuxième approximation = 0.852818
+	Face n°453 : première approximation = 0.854098 ; deuxième approximation = 0.853077
+	Face n°454 : première approximation = 0.854536 ; deuxième approximation = 0.853376
+	Face n°455 : première approximation = 0.854939 ; deuxième approximation = 0.85374
+	Face n°456 : première approximation = 0.855343 ; deuxième approximation = 0.854192
+	Face n°457 : première approximation = 0.855751 ; deuxième approximation = 0.854723
+	Face n°458 : première approximation = 0.85611 ; deuxième approximation = 0.85535
+	Face n°459 : première approximation = 0.856148 ; deuxième approximation = 0.855619
+	Face n°460 : première approximation = 0.855097 ; deuxième approximation = 0.853681
+	Face n°461 : première approximation = 0.853131 ; deuxième approximation = 0.848021
+	Face n°462 : première approximation = 0.840723 ; deuxième approximation = 0.844398
+	Face n°463 : première approximation = 0.956684 ; deuxième approximation = 0.956326
+	Face n°464 : première approximation = 0.95682 ; deuxième approximation = 0.956463
+	Face n°465 : première approximation = 0.956898 ; deuxième approximation = 0.956866
+	Face n°466 : première approximation = 0.957435 ; deuxième approximation = 0.957435
+	Face n°467 : première approximation = 0.954582 ; deuxième approximation = 0.95581
+	Face n°468 : première approximation = 0.9384 ; deuxième approximation = 0.948086
+	Face n°469 : première approximation = 0.943521 ; deuxième approximation = 0.932853
+	Face n°470 : première approximation = 0.939205 ; deuxième approximation = 0.938253
+	Face n°471 : première approximation = 0.939978 ; deuxième approximation = 0.949251
+	Face n°472 : première approximation = 0.956806 ; deuxième approximation = 0.957445
+	Face n°473 : première approximation = 0.95671 ; deuxième approximation = 0.956976
+	Face n°474 : première approximation = 0.956626 ; deuxième approximation = 0.956573
+	Face n°475 : première approximation = 0.956748 ; deuxième approximation = 0.956347
+	Face n°476 : première approximation = 0.956583 ; deuxième approximation = 0.956279
+	Face n°477 : première approximation = 0.956714 ; deuxième approximation = 0.95636
+	Face n°478 : première approximation = 0.95685 ; deuxième approximation = 0.956605
+	Face n°479 : première approximation = 0.956941 ; deuxième approximation = 0.957027
+	Face n°480 : première approximation = 0.957554 ; deuxième approximation = 0.957591
+	Face n°481 : première approximation = 0.954699 ; deuxième approximation = 0.955273
+	Face n°482 : première approximation = 0.938589 ; deuxième approximation = 0.948063
+	Face n°483 : première approximation = 0.943521 ; deuxième approximation = 0.932855
+	Face n°484 : première approximation = 0.939205 ; deuxième approximation = 0.938251
+	Face n°485 : première approximation = 0.94017 ; deuxième approximation = 0.948934
+	Face n°486 : première approximation = 0.956856 ; deuxième approximation = 0.957393
+	Face n°487 : première approximation = 0.95677 ; deuxième approximation = 0.957111
+	Face n°488 : première approximation = 0.956659 ; deuxième approximation = 0.95665
+	Face n°489 : première approximation = 0.956776 ; deuxième approximation = 0.956382
+	Face n°490 : première approximation = 0.956573 ; deuxième approximation = 0.95629
+	Face n°491 : première approximation = 0.994635 ; deuxième approximation = 0.997663
+Ecriture du fichier JSON
+		0/491
+		50/491
+		100/491
+		150/491
+		200/491
+		250/491
+		300/491
+		350/491
+		400/491
+		450/491
+		491/491
