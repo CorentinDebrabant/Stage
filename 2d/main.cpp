@@ -362,7 +362,9 @@ Repere getRepere(Point P)
     double p3 = val(P.x-dt,P.y,P.z);
     double p4 = val(P.x,P.y-dt,P.z);
     bool p = true;
-    while(abs(p1-p3)<dtO/100 && abs(p2-p4)<dtO/100)
+    //On cherche une distance entre le point central et les points qui servent à calculer le gradient tel que les valeurs sont différentes afin d'avoir un gradient qui ne soit pas nul dans la plupart des cas
+    //Même si le gradient local au point est nul, on utilise la tendance proche
+    while(abs(p1-p3)<dtO/10 && abs(p2-p4)<dtO/10)
     {
         if(p)
             dt/=10;
@@ -377,7 +379,7 @@ Repere getRepere(Point P)
             p=false;
             dt = dtO;
         }
-        if(dt>0.001 && (abs(target-p1)>dtO/100 || abs(target-p3)>dtO/100 || abs(target-p2)>dtO/100 || abs(target-p4)>dtO/100))
+        if(dt>normeMin && (abs(target-p1)>dtO/10 || abs(target-p3)>dtO/10 || abs(target-p2)>dtO/10 || abs(target-p4)>dtO/10))
         {
             break;
         }
@@ -386,14 +388,16 @@ Repere getRepere(Point P)
     double dFy = 0;
     double dX = 1;
     double dY = 1;
-    if(abs(p1-p3)>dtO/100)
+    //De plus, si le point dont on cherche le gradient est un extremum local dont les valeurs autour changent à la même fréquence, alors les points avant et après (en x ou y) peuvent avoir les mêmes valeurs
+    //Dans ce cas, on ne prend qu'une des deux valeurs de cette direction
+    if(abs(p1-p3)>dtO/10)
     {
         dFx = p1-p3;
         dX = 2*dt;
     }
     else
     {
-        if(abs(target-p1)>dtO/100)
+        if(abs(target-p1)>dtO/10)
         {
             dFx = p1 - target;
             dX = dt;
@@ -404,14 +408,14 @@ Repere getRepere(Point P)
             dX = dt;
         }
     }
-    if(abs(p2-p4)>dtO/100)
+    if(abs(p2-p4)>dtO/10)
     {
         dFy = p2-p4;
         dY = 2*dt;
     }
     else
     {
-        if(abs(target-p2)>dtO/100)
+        if(abs(target-p2)>dtO/10)
         {
             dFy = p2 - target;
             dY = dt;
@@ -427,9 +431,11 @@ Repere getRepere(Point P)
     Point T = {0,0,0};
     N.x = dFx/dX;
     N.y = dFy/dY;
+    //La tangente à l'iso-ligne qui passerait par ce point est orthogonale au gradient
     T.x = N.x * cos(o) - N.y * sin(o);
     T.y = N.x * sin(o) + N.y * cos(o);
     T.z = N.z;
+    //On normalise la tangente puisqu'on a pas d'information sur la courbure de l'iso-ligne
     float m2 = dist(T.x,T.y,T.z);
     T.x/=m2;
     T.y/=m2;
@@ -456,6 +462,8 @@ void findIso(double target, double pas, vector<PointCourbe*> *iso, Point P, int 
     vector<PointCourbe*> add;
     bool fin = false;
     bool adding = false;
+    //Cherche les points des courbes de gradient qui sont dans le carré
+    //Si un de ces points a déjà été ajouté dans une iso-ligne (normalement celle qui est entrain d'être créer), alors on s'arrête (parce que ça veux dire que l'algorithme a fait une boucle)
     for(int i = 0; i<NewCourbeGrad.size(); i++)
     {
         vector<PointCourbe*> c = NewCourbeGrad[i];
@@ -494,6 +502,7 @@ void findIso(double target, double pas, vector<PointCourbe*> *iso, Point P, int 
         double v1 = target - val(P.x+pas,P.y-pas,P.z);
         double v2 = target - val(P.x+pas,P.y+pas,P.z);
         double v3 = target - val(P.x-pas,P.y+pas,P.z);
+        //On traite les cas où un ou plusieurs coins du carré se trouve sur l'iso-ligne
         if(v0==0)
         {
             if((v1>0 && v3<0) || (v1<0 && v3>0))
@@ -561,6 +570,7 @@ void findIso(double target, double pas, vector<PointCourbe*> *iso, Point P, int 
         Point P12= {P.x+2*pas,P.y,P.z};
         Point P23 = {P.x,P.y+2*pas,P.z};
         Point P30 = {P.x-2*pas,P.y,P.z};
+        //On identifie la configuration des coins du carré
         string s = to_string(v0>0)+to_string(v1>0)+to_string(v2>0)+to_string(v3>0);
         string s2 = to_string(l0==-1)+to_string(l1==-1)+to_string(l2==-1)+to_string(l3==-1);
         int chx = msTable[s];
@@ -672,6 +682,7 @@ void findIso(double target, double pas, vector<PointCourbe*> *iso, Point P, int 
                 }
                 break;
         }
+        //On identifie les points de l'iso-ligne sur les bords du carré (les bords concernés dépendent de la configuration)
         for(int i=0; i<1000; i++)
         {
             double t = i*0.001;
@@ -686,6 +697,7 @@ void findIso(double target, double pas, vector<PointCourbe*> *iso, Point P, int 
             if(abs(val(Pf2.x,Pf2.y,Pf2.z)-target)<0.00001)
                 break;
         }
+        //On ordonne les points des courbes de gradient selon la distance de leur projection entre les deux points de l'iso-ligne de l'étape précédente
         vector<PointCourbe*> adding;
         for(int i=0; i<add.size(); i++)
         {
@@ -706,6 +718,7 @@ void findIso(double target, double pas, vector<PointCourbe*> *iso, Point P, int 
             if(!added)
                 adding.push_back(Pct);
         }
+        //On ajoute les points des courbes de gradient dans l'iso-ligne (dans l'ordre estimé à l'étape précédente)
         for(int i=0; i<adding.size(); i++)
         {
             PointCourbe* Pca = adding[i];
@@ -719,13 +732,15 @@ void findIso(double target, double pas, vector<PointCourbe*> *iso, Point P, int 
                 iso->push_back(Pca);
             }
         }
+        //On vérifie si le carré touche le bord de la surface
         int chx2 = msTable[s2];
         if(chx2!=0)
         {
             g += 0.5;
-            
+            //On vérifie si l'iso-ligne sort de la surface
             if(func(Pf2.x,Pf2.y,Pf2.z)==-1 || func(Pf1.x,Pf1.y,Pf1.z)==-1)
             {
+                //On identifie le point de l'iso-ligne le plus proche du bord (ou proche en dehors de la surface)
                 fin = true;
                 Point Pf = Pf2;
                 Point Po = Pf1;
@@ -802,10 +817,13 @@ void findIso(double target, double pas, vector<PointCourbe*> *iso, Point P, int 
         }
         if(chx2==0 && l0==-1)
             fin = true;
+        //On regarde si l'algorithme devrait se terminer
         if(!fin)
         {
+            //On continu l'algorithme
             if(dir==0)
             {
+                //Si c'est le premier carré, alors on lance le carré dans les deux directions de l'iso-ligne
                 switch(chx)
                 {
                     case 1:
@@ -836,6 +854,7 @@ void findIso(double target, double pas, vector<PointCourbe*> *iso, Point P, int 
             }
             else
             {
+                //Sinon, on ne continu que dans la direction qui ne fait pas revenir en arrière
                 switch(chx)
                 {
                     case 1:
@@ -879,6 +898,7 @@ void findIso(double target, double pas, vector<PointCourbe*> *iso, Point P, int 
         }
         else
         {
+            //Si l'algorithme devait finir lors de sa première itération (typiquement parce qu'il commence au bord de la surface), alors on avance le carré dans la direction de l'iso-ligne qui ne sort pas de la surface
             if(dir==0)
             {
                 b+=0.75;
@@ -1103,6 +1123,7 @@ void findIso(double target, double pas, vector<PointCourbe*> *iso, Point P, int 
             }
         }
     }
+    //On dessine le carré, la couleur change en fonction des cas rencontrés pour ce carré (voir les variables r, g et b)
     Point P0 = {P.x-pas,P.y-pas,P.z};
     Point P1 = {P.x+pas,P.y-pas,P.z};
     Point P2 = {P.x+pas,P.y+pas,P.z};
