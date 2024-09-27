@@ -47,20 +47,12 @@ struct PointCourbe{
 };
 
 
-struct PointReturn{
-    Point P;
-    bool isOk;
-};
-
 struct Repere{
     Point P;
     Point N;
     Point T;
 };
 
-struct Face{
-    vector<PointCourbe> sommets;
-};
 
 struct half_edge{
     int id;
@@ -102,14 +94,10 @@ map<string,half_edge*> hes;
 vector<heFace> Faces;
 
 vector<float> targets;
-map<int,vector<vector<Point>>> courbes;
-map<int,vector<vector<PointCourbe>>> courbeFinale;
-map<int,vector<vector<PointCourbe*>>> newCourbeFinale;
+map<int,vector<vector<PointCourbe*>>> newCourbeFinale; //Iso-lignes
 map<string,int> msTable;
-vector<vector<PointCourbe>> courbeGrad;
-vector<vector<PointCourbe*>> NewCourbeGrad;
+vector<vector<PointCourbe*>> NewCourbeGrad; //Courbes de gradient
 
-vector<Face> listeFace;
 
 float msMoy = 0;
 int nbMs = 0;
@@ -126,14 +114,6 @@ int n2=0;
 bool dessinne = true;
 
 int nb = 0;
-
-struct Square{
-    Point P;
-    int type;
-    int courbe;
-    bool fini = false;
-    double pas;
-};
 
 map<string,bool> Passage;
 
@@ -2739,11 +2719,7 @@ void affichage(void)
     hes.clear();
     color = 0;
     surface.clear();
-    listeFace.clear();
     targets.clear();
-    courbes.clear();
-    courbeFinale.clear();
-    courbeGrad.clear();
     newCourbeFinale.clear();
     NewCourbeGrad.clear();
     glPointSize(7.0f);
